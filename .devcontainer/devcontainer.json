@@ -1,0 +1,35 @@
+// See https://containers.dev/implementors/json_reference/ for configuration reference
+{
+  "name": "paper_translator",
+  "dockerComposeFile": "../docker/docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/home/paper_translator",
+  "settings": {
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "black",
+    "better-comments.multilineComments": true,
+    "better-comments.highlightPlainText": true
+  },
+  "extensions": [
+    // Python 関係
+    "ms-python.python", // Python
+    "ms-python.vscode-pylance", // Pylance
+    "KevinRose.vsc-python-indent", // Python Indent
+    "ms-python.black-formatter", // Black
+    "ms-python.flake8", // flake8
+    "ms-python.isort", // isort
+    "magicstack.MagicPython", // MagicPython
+    // その他
+    "njpwerner.autodocstring", // autoDocstring
+    "aaron-bond.better-comments", // better-comments
+    "usernamehw.errorlens", // Error Lens
+    "GrapeCity.gc-excelviewer", // Excel Viewer
+    "GitHub.copilot", // Github Copilot
+    "GitHub.copilot-chat", // Github Copilot Chat
+    "oderwat.indent-rainbow", // Indent Rainbow
+    "christian-kohler.path-intellisense", // Path Intellisense
+    "mosapride.zenkaku" // Zenkaku
+  ],
+  // VSCodeを閉じた時、コンテナが自動停止するように指定
+  "shutdownAction": "stopCompose"
+}

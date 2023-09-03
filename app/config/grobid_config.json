@@ -1,0 +1,11 @@
+{
+    "grobid_server": "http://localhost:8070",
+    "grobidHome": "grobid-home",
+    "temp": "tmp",
+    "pdf": [
+        {
+            "name": "pdfName",
+            "url": "pdfUrl"
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{ 
+    "editor.formatOnSave": true,
+    "editor.renderFinalNewline": "on",
+    "editor.renderWhitespace": "all",
+    "editor.tabCompletion": "on",
+    "editor.tabSize": 4,
+    "editor.trimAutoWhitespace": true,
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true,
+        },
+        // 拡張機能のBlack Formatterを使う場合には必ず指定する
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        // ファイルの保存時にフォーマットを自動実行する場合
+        "editor.formatOnSave": true
+    },
+    // 最大文字数などのオプション引数を指定する場合
+    "black-formatter.args": [
+        "--line-length=80"
+    ],
+    "flake8.args": [
+        "--max-line-length=88",
+        "--ignore=E203,W503,W504"
+    ],
+    "python.analysis.importFormat": "absolute",
+    "python.testing.pytestArgs": [
+        "src"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.formatting.provider": "none",
+}
