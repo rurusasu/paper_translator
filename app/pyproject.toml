@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "paper-translator"
+version = "0.1.0"
+description = "chatGPTを用いてarXivの論文を自動的に翻訳ためのアプリケーション"
+authors = ["rurusasu"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+arxiv = "^1.4.8"
+openai = "^0.27.9"
+slack-bolt = "^1.18.0"
+transformers = "^4.32.0"
+tqdm = "^4.66.1"
+torch = ">=2.0.0, !=2.0.1"
+sentencepiece = "^0.1.99"
+notion-client = "^2.0.0"
+grobid-client-python = "^0.0.7"
+sacremoses = "^0.0.53"
+auto-gptq = "^0.4.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+mypy = "^1.5.1"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
