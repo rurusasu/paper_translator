@@ -7,7 +7,7 @@
     "editor.trimAutoWhitespace": true,
     "[python]": {
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true,
+            "source.organizeImports": "always",
         },
         // 拡張機能のBlack Formatterを使う場合には必ず指定する
         "editor.defaultFormatter": "ms-python.black-formatter",

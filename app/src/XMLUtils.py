@@ -18,23 +18,43 @@ class Section:
         self.body = body
 
 
-def make_xml_file(
-    dir_path: str, pdf_name: str, is_debug: bool = False
-) -> Element:
-    if not is_debug:
-        cp = subprocess.run(
+def run_grobid(dir_path: str, pdf_name: str) -> None:
+    """Grobidを実行してXMLファイルを生成する関数
+
+    Args:
+        dir_path (str): PDFファイルが保存されているディレクトリのパス
+        pdf_name (str): PDFファイルの名前（拡張子を除く）
+    """
+    try:
+        subprocess.run(
             f"java -Xmx4G -Djava.library.path=grobid-home/lib/lin-64:grobid-home/lib/lin-64/jep -jar {GROBID_PATH}/grobid-core/build/libs/grobid-core-0.7.3-onejar.jar -gH {GROBID_PATH}/grobid-home  -dIn {dir_path} -dOut {dir_path} -exe processFullText",
             shell=True,
+            check=True,
         )
-
-    xml_path = dir_path + "/" + pdf_name + ".tei.xml"
-    tree = ET.parse(xml_path)
-    root = tree.getroot()
-    return root
+    except subprocess.CalledProcessError as e:
+        print(f"Grobid failed with error code {e.returncode}")
+        raise
 
 
-def get_sections(root: Element) -> List[str]:
-    """XMLからセクションを取得する関数
+def parse_xml_file(xml_path: str) -> Element:
+    """XMLファイルを解析してルート要素を返す関数
+
+    Args:
+        xml_path (str): XMLファイルのパス
+    Returns:
+        root (Element): XMLのルート要素
+    """
+    try:
+        tree = ET.parse(xml_path)
+        root = tree.getroot()
+        return root
+    except ET.ParseError as e:
+        print(f"Failed to parse XML file: {e}")
+        raise
+
+
+def extract_sections(root: Element) -> List[Section]:
+    """XMLからセクションを抽出する関数
 
     Args:
         root (Element): XMLのルート要素
@@ -48,7 +68,7 @@ def get_sections(root: Element) -> List[str]:
             if element.tag == "{http://www.tei-c.org/ns/1.0}head":
                 section.title = element.text
             if element.tag == "{http://www.tei-c.org/ns/1.0}p":
-                section.body += get_text(element=element)
+                section.body += extract_text(element=element)
 
         if section.body != "":
             sections.append(section)
@@ -56,13 +76,13 @@ def get_sections(root: Element) -> List[str]:
     return sections
 
 
-def get_text(element: Element):
-    """XML要素からテキストを取得
+def extract_text(element: Element) -> str:
+    """XML要素からテキストを抽出する関数
 
     Args:
         element (Element): XMLの要素
     Returns:
-        text: テキスト
+        text (str): テキスト
     """
     text = ""
     for elem in element.iter():
@@ -79,5 +99,7 @@ if __name__ == "__main__":
     dir_path = (
         "./data/ALGAN_Time_Series_Anomaly_Detection_with_Adjusted-LSTM_GAN/"
     )
-    root = make_xml_file(dir_path, pdf_name)
-    sections = get_sections(root=root)
+    run_grobid(dir_path, pdf_name)
+    xml_path = dir_path + "/" + pdf_name + ".tei.xml"
+    root = parse_xml_file(xml_path)
+    sections = extract_sections(root=root)

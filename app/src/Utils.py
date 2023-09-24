@@ -82,9 +82,9 @@ def write_markdown(
         model_path="/home/paper_translator/data/models/ELYZA-japanese-Llama-2-7b-fast-instruct-q4_K_M.gguf",
     )
     prompt_temp_path = "/home/paper_translator/data/prompt_temp/prompt.txt"
-    index_dir_path = "/home/paper_translator/data/vector_store/"
+    # index_dir_path = "/home/paper_translator/data/vector_store/"
     pipline = Pipeline(llm_model=llm_model, prompt_temp_path=prompt_temp_path)
-    pipline.ReadVectorIndex(index_dir_path=index_dir_path)
+    # pipline.ReadVectorIndex(index_dir_path=index_dir_path)
 
     markdown_text = ""
     for section in tqdm(sections):
@@ -92,11 +92,7 @@ def write_markdown(
         if (len(section.body.split(" "))) < 144:
             # translated_text = translator(section.body)[0]["translation_text"]
             prompt_text = section.body
-        # 144文字以上500文字以下の場合は、要約して翻訳する
-        elif len(section.body.split(" ")) < 500:
-            summary = summarizer(section.body)[0]["summary_text"]
-            # translated_text = translator(summary)[0]["translation_text"]
-            prompt_text = summary
+        # 144文字以上の場合は、要約して翻訳する
         else:
             response = get_message(text=section.body, system=SYSTEM)
             # translated_text = translator(response)[0]["translation_text"]
@@ -124,7 +120,9 @@ def write_markdown(
             start_index = output_text.find("### 出力 ###")
             translated_text = output_text[start_index:]
             """
-        translated_text = pipline.Answer(prompt_text)
+        translated_text = pipline.generate_llm_response_for_prompt_temp(
+            prompt_text
+        )
 
         markdown_text += "\n" + translated_text
 
@@ -136,7 +134,7 @@ def write_markdown(
 
 if __name__ == "__main__":
     # from src.arXivUtils import get_pdf
-    from src.XMLUtils import get_sections, make_xml_file
+    from src.XMLUtils import extract_sections, parse_xml_file, run_grobid
 
     # dir_path, _, pdf_name = get_pdf("2103.00020")
     dir_path = "/home/paper_translator/data/documents/Learning_Transferable_Visual_Models_From_Natural_Language_Supervision"
@@ -144,7 +142,9 @@ if __name__ == "__main__":
         "Learning_Transferable_Visual_Models_From_Natural_Language_Supervision"
     )
 
-    root = make_xml_file(dir_path=dir_path, pdf_name=pdf_name, is_debug=True)
-    sections = get_sections(root=root)
+    run_grobid(dir_path, pdf_name)
+    xml_path = dir_path + "/" + pdf_name + ".tei.xml"
+    root = parse_xml_file(xml_path)
+    sections = extract_sections(root=root)
     markdown_text = write_markdown(sections=sections, pdf_name=pdf_name)
     print(markdown_text)

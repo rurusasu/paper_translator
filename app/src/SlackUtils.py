@@ -5,45 +5,170 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk.errors import SlackApiError
 
-from src.arXivUtils import get_pdf
+from src.arXivUtils import download_pdf
 from src.SaveToNotion import save_to_notion_page
 from src.Utils import write_markdown
-from src.XMLUtils import get_sections, make_xml_file
+from src.XMLUtils import extract_sections, parse_xml_file, run_grobid
 
 # ボットトークンとソケットモードハンドラーを使ってアプリを初期化します
 app = App(token=os.environ["SLACK_BOT_TOKEN"])
 
 
 def get_thread_messages(channel_id: str, thread_ts: List[str]) -> List[dict]:
-    try:
-        result = app.client.conversations_replies(
-            channel=channel_id, ts=thread_ts, limit=1000
-        )
-    except SlackApiError as e:
-        print(f"Error getting thread messages: {e}")
-        return None
-
-    thread_messages = result["messages"]
-    return thread_messages
-
-
-@app.event("app_mention")
-def handle_mention_events_and_get_entryID(body, logger, say):
     """
     指定したチャンネルのスレッドを取得する関数
 
     Args:
         channel_id (str): チャンネルID
-        thread_ts (str): スレッドのタイムスタンプ
+        thread_ts (List[str]): スレッドのタイムスタンプ
 
     Returns:
-        thread_messages (list): スレッドのメッセージ
+        thread_messages (List[dict]): スレッドのメッセージ
+    """
+    try:
+        result = app.client.conversations_replies(
+            channel=channel_id, ts=thread_ts, limit=1000
+        )
+        thread_messages = result["messages"]
+        return thread_messages
+    except SlackApiError as e:
+        # Slack APIエラーが発生した場合は、エラーメッセージを表示してNoneを返す
+        print(f"Error getting thread messages: {e}")
+        return None
+
+
+def get_entry_id_from_thread_text(thread_text: str) -> str:
+    """
+    スレッドのテキストからエントリーIDを取得する関数
+
+    Args:
+        thread_text (str): スレッドのテキスト
+
+    Returns:
+        entry_id (str): エントリーID
+    """
+    entry_id = thread_text.split("\n")[3]
+    if entry_id[-1] == ">":
+        entry_id = entry_id[:-1]
+    return entry_id
+
+
+def get_summary_markdown_text(dir_path: str, pdf_name: str) -> str:
+    """
+    PDFファイルから要約したマークダウンテキストを生成する関数
+
+    Args:
+        dir_path (str): PDFファイルのディレクトリパス
+        pdf_name (str): PDFファイル名
+
+    Returns:
+        markdown_text (str): 要約したマークダウンテキスト
+    """
+    run_grobid(dir_path, pdf_name)
+    xml_path = dir_path + "/" + pdf_name + ".tei.xml"
+    root = parse_xml_file(xml_path)
+    sections = extract_sections(root=root)
+    markdown_text = write_markdown(sections=sections, pdf_name=pdf_name)
+
+    # デバッグ用にテキストを保存する
+    with open(f"{dir_path}/tmp_markdown.md", mode="w") as f:
+        f.write(markdown_text)
+
+    return markdown_text
+
+
+def process_ping_request(user: str, thread_ts: str, say) -> None:
+    """
+    pingリクエストを処理する関数
+
+    Args:
+        user (str): ユーザーID
+        thread_ts (str): スレッドのタイムスタンプ
+        say (function): botの発言を行う関数
+    """
+    say(
+        text=f"<@{user}> pong :robot_face:",
+        thread_ts=thread_ts,
+    )
+
+
+def process_pdf_request(
+    thread_message: dict, user: str, thread_ts: str, say
+) -> None:
+    """
+    PDFファイルの要約を作成する関数
+
+    Args:
+        thread_message (dict): スレッドのメッセージ
+        user (str): ユーザーID
+        thread_ts (str): スレッドのタイムスタンプ
+        say (function): botの発言を行う関数
+    """
+    # PDFファイルを保存するディレクトリのパスを取得する
+    document_dir_path = os.getenv("DOCUMENT_DIR")
+
+    thread_text = thread_message["text"]
+    entry_id = get_entry_id_from_thread_text(thread_text)
+    dir_path, _, pdf_name = download_pdf(entry_id, document_dir_path)
+
+    # 要約したマークダウンテキストを生成する
+    markdown_text = get_summary_markdown_text(
+        dir_path=dir_path, pdf_name=pdf_name
+    )
+
+    # Notionにページを作成し、要約を書き込む
+    save_to_notion_page(markdown_text=markdown_text, entry_id=entry_id)
+
+    # Slackに要約を書き込む
+    say(
+        text=f"<@{user}> 要約が完了しました :robot_face:",
+        thread_ts=thread_ts,
+    )
+
+
+def process_thread_message(
+    message: str, thread_message: dict, user: str, thread_ts: str, say
+) -> None:
+    """
+    スレッドのメッセージを処理する関数
+
+    Args:
+        message (str): ユーザーからの入力
+        thread_message (dict): スレッドのメッセージ
+        user (str): ユーザーID
+        thread_ts (str): スレッドのタイムスタンプ
+        say (function): botの発言を行う関数
+    """
+    if "subtype" in thread_message.keys():
+        # subtypeがある場合は、処理をスキップする
+        return None
+
+    if "要約" in message:
+        # 要約を作成する
+        process_pdf_request(thread_message, user, thread_ts, say)
+    elif "pdf" in message:
+        # pdfファイルを取得する
+        process_pdf_request(thread_message, user, thread_ts, say)
+    elif "ping" in message:
+        # pingリクエストを処理する
+        process_ping_request(user, thread_ts, say)
+    else:
+        # それ以外の場合は、エラーメッセージを返す
+        say("不正なメッセージが送信されました。", thread_ts=thread_ts)
+
+
+@app.event("app_mention")
+def process_mention_event(body, logger, say):
+    """
+    app_mentionイベントを処理する関数
+
+    Args:
+        body (dict): イベントの情報
+        logger (Logger): ロガー
+        say (function): botの発言を行う関数
     """
     logger.info(body)
-    bot_user_id = body["authorizations"][0]["user_id"]
-    text = body["event"]["text"]
     user = body["event"]["user"]
-
     channel_id = body["event"]["channel"]
     if "thread_ts" in body["event"].keys():
         thread_ts = body["event"]["thread_ts"]
@@ -52,50 +177,25 @@ def handle_mention_events_and_get_entryID(body, logger, say):
         thread_ts = body["event"]["ts"]
         thread_messages = [body["event"]]
 
-    text = text.replace(f"<@{bot_user_id}>", "").strip()
-    # デバック用
-    if text == "ping":
-        say(text=f"<@{user}> pong :robot_face:", thread_ts=thread_ts)
+    if thread_messages is None:
+        # スレッドのメッセージが取得できなかった場合は、エラーメッセージを返す
+        say("スレッドのメッセージを取得できませんでした。", thread_ts=thread_ts)
         return None
 
-    else:
-        # pdfファイルを取得
-        thread_text = thread_messages[0]["text"]
-        entry_id = thread_text.split("\n")[3]
-        dir_path, _, pdf_name = get_pdf(entry_id)
+    bot_user_id = body["authorizations"][0]["user_id"]
+    message = body["event"]["text"]
+    message = message.replace(f"<@{bot_user_id}>", "").strip()
 
-        # セクションを分割して、要約した文章を生成
-        root = make_xml_file(dir_path=dir_path, pdf_name=pdf_name)
-        sections = get_sections(root=root)
-        markdown_text = write_markdown(sections=sections, pdf_name=pdf_name)
-
-        # for debug
-        # ここでtext類を保存する
-        with open(f"{dir_path}/tmp_text.txt", mode="w") as f:
-            f.write(thread_text)
-        with open(f"{dir_path}/tmp_markdown.md", mode="w") as f:
-            f.write(markdown_text)
-
-        with open(f"{dir_path}/tmp_text.txt", mode="r") as f:
-            thread_text = f.read()
-        with open(f"{dir_path}/tmp_markdown.md", mode="r") as f:
-            markdown_text = f.read()
-
-        # Notionにページを作成し、要約を書き込む
-        save_to_notion_page(markdown_text=markdown_text, entry_id=entry_id)
-
-        # Slackに要約を書き込む
-        say(
-            text=f"<@{user}> 要約が完了しました :robot_face:",
-            thread_ts=thread_ts,
-        )
+    thread_message = thread_messages[0]
+    process_thread_message(message, thread_message, user, thread_ts, say)
 
 
-def write_message(channnel_id: str, message: str):
+def write_message(channel_id: str, message: str) -> bool:
     """
-    メッセージを書き込む関数
+    Slackにメッセージを書き込む関数
 
     Args:
+        channel_id (str): チャンネルID
         message (str): 書き込むメッセージ
 
     Returns:
@@ -104,14 +204,13 @@ def write_message(channnel_id: str, message: str):
     completed_flag = False
     try:
         app.client.chat_postMessage(
-            channel=channnel_id,
+            channel=channel_id,
             text=message,
         )
+        completed_flag = True
     except SlackApiError as e:
+        # Slack APIエラーが発生した場合は、エラーメッセージを表示してFalseを返す
         print(f"Error writing message: {e}")
-        return completed_flag
-
-    completed_flag = True
     return completed_flag
 
 

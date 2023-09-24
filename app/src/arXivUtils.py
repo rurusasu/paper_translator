@@ -1,25 +1,15 @@
 import datetime as dt
 import os
-from typing import Tuple
+from typing import Dict, List
 from urllib.error import HTTPError
 
 import arxiv
 
-# arXiv APIの設定
-N_DAYS = 14  # 何日前からの論文を検索するか
-MAX_RESULT = 10  # 取得する論文数の上限
-
-# Query テンプレートを作成
-# テンプレートを用意
-QUERY_TEMPLATE = (
-    "%28 ti:%22{}%22 OR abs:%22{}%22 %29 AND submittedDate: [{} TO {}]"
-)
-
 # 興味があるカテゴリー群
-CATEGORIES = {
+CATEGORIES = [
     "cs.AI",
     ...,
-}
+]
 
 # pdfの保存先
 base_dir = "./data"
@@ -37,10 +27,19 @@ def generate_query(keyword: str, n_days: int) -> str:
     Returns:
         query (str): 検索クエリ
     """
+    QUERY_TEMPLATE = (
+        "%28 ti:%22{}%22 OR abs:%22{}%22 %29 AND submittedDate: [{} TO {}]"
+    )
+
     try:
         today = dt.datetime.today() - dt.timedelta(days=n_days)
         base_date = today - dt.timedelta(days=n_days)
-        query = f"{keyword} AND submittedDate:[{base_date.strftime('%Y%m%d%H%M%S')} TO {today.strftime('%Y%m%d%H%M%S')}]"
+        query = QUERY_TEMPLATE.format(
+            keyword,
+            keyword,
+            base_date.strftime("%Y%m%d%H%M%S"),
+            today.strftime("%Y%m%d%H%M%S"),
+        )
         return query
     except Exception as e:
         # エラーが発生した場合は、空の文字列を返す
@@ -73,7 +72,9 @@ def search_arxiv(query: str, max_result: int) -> arxiv.Search:
         return None
 
 
-def create_paper_list(search: arxiv.Search, categories: List[str]) -> List:
+def create_paper_list(
+    search: arxiv.Search, categories: List[str] = CATEGORIES
+) -> List[Dict[str, str]]:
     """
     arXiv APIの検索結果から，論文情報のリストを作成する関数
 
@@ -82,7 +83,7 @@ def create_paper_list(search: arxiv.Search, categories: List[str]) -> List:
         categories (list): カテゴリーのリスト
 
     Returns:
-        result_list (list): 論文情報のリスト
+        result_list (List[Dict[str, str]]): 論文情報の辞書のリスト
     """
     try:
         result_list = []
@@ -90,14 +91,17 @@ def create_paper_list(search: arxiv.Search, categories: List[str]) -> List:
             if len((set(paper.categories) & set(categories))) == 0:
                 continue
             else:
-                result_list.append({
-                    "title": paper.title,
-                    "authors": paper.authors,
-                    "summary": paper.summary,
-                    "pdf_url": paper.pdf_url,
-                    "published": paper.published,
-                    "updated": paper.updated,
-                })
+                result_list.append(
+                    {
+                        "title": paper.title,
+                        "entry_id": paper.entry_id,
+                        "authors": paper.authors,
+                        "summary": paper.summary,
+                        "pdf_url": paper.pdf_url,
+                        "published": paper.published,
+                        "updated": paper.updated,
+                    }
+                )
         return result_list
     except Exception as e:
         # エラーが発生した場合は、空のリストを返す
@@ -105,7 +109,9 @@ def create_paper_list(search: arxiv.Search, categories: List[str]) -> List:
         return []
 
 
-def get_paper_info_from_arxiv(query: str, max_result: int, categories: List[str]) -> List:
+def get_paper_info_from_arxiv(
+    query: str, max_result: int, categories: List[str] = CATEGORIES
+) -> List[arxiv.Result]:
     """
     arXiv APIを使って，論文情報を取得する関数
 
@@ -128,7 +134,12 @@ def get_paper_info_from_arxiv(query: str, max_result: int, categories: List[str]
     return result_list
 
 
-def get_paper_info(keyword: str, categories: List[str], n_days: int = 7, max_result: int = 10) -> List:
+def get_paper_info(
+    keyword: str,
+    categories: List[str] = CATEGORIES,
+    n_days: int = 7,
+    max_result: int = 10,
+) -> List[arxiv.Result]:
     """
     arXiv APIを使って，論文情報を取得する関数
 
@@ -190,7 +201,9 @@ def download_pdf(entry_id: str, document_dir: str) -> tuple:
     try:
         paper = get_paper_info_by_id(entry_id)
 
-        dir_name = paper.title.replace(" ", "_").replace(":", "").replace(",", "")
+        dir_name = (
+            paper.title.replace(" ", "_").replace(":", "").replace(",", "")
+        )
         dir_path = f"{document_dir}/{dir_name}/"
 
         pdf_name = f"{dir_name}"
