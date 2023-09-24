@@ -56,6 +56,12 @@ def write_summary(channel_id: str, keyword: str, result_list: List[str]):
 
 
 if __name__ == "__main__":
+    import os
+
+    from slack_bolt.adapter.socket_mode import SocketModeHandler
+
+    from src.SlackUtils import app
+
     keyword_list = [
         "LLM",
         "diffusion",
@@ -66,3 +72,6 @@ if __name__ == "__main__":
         write_summary(
             channel_id=SLACK_CHANNENL, keyword=keyword, result_list=result_list
         )
+
+    # アプリを起動します
+    SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()

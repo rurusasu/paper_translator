@@ -6,6 +6,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk.errors import SlackApiError
 
 from src.arXivUtils import get_pdf
+from src.SaveToNotion import save_to_notion_page
 from src.Utils import write_markdown
 from src.XMLUtils import get_sections, make_xml_file
 
@@ -70,8 +71,24 @@ def handle_mention_events_and_get_entryID(body, logger, say):
 
         # for debug
         # ここでtext類を保存する
-        with open("./tmp_markdown.md", mode="w") as f:
+        with open(f"{dir_path}/tmp_text.txt", mode="w") as f:
+            f.write(thread_text)
+        with open(f"{dir_path}/tmp_markdown.md", mode="w") as f:
             f.write(markdown_text)
+
+        with open(f"{dir_path}/tmp_text.txt", mode="r") as f:
+            thread_text = f.read()
+        with open(f"{dir_path}/tmp_markdown.md", mode="r") as f:
+            markdown_text = f.read()
+
+        # Notionにページを作成し、要約を書き込む
+        save_to_notion_page(markdown_text=markdown_text, entry_id=entry_id)
+
+        # Slackに要約を書き込む
+        say(
+            text=f"<@{user}> 要約が完了しました :robot_face:",
+            thread_ts=thread_ts,
+        )
 
 
 def write_message(channnel_id: str, message: str):

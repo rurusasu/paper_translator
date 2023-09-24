@@ -19,6 +19,7 @@
     "ms-python.flake8", // flake8
     "ms-python.isort", // isort
     "magicstack.MagicPython", // MagicPython
+    "ms-toolsai.jupyter", // Jupyter
     // その他
     "njpwerner.autodocstring", // autoDocstring
     "aaron-bond.better-comments", // better-comments

@@ -1,13 +1,286 @@
 
-試しの:広年モデルが、その上で動作するように、その上に、その上に、その上にある複数のモデルのモデルの、個々のモデルの、個々のモデルの特定の、その日のデータの、その日のユーザの、その日のユーザの、その日のユーザの、その日のユーザの、その日のユーザの、その日のユーザの、その日のユーザの、その日のデータの、その日のユーザによる、その日のデータの、その日のユーザによる、その日のデータの、その日のデータの、その日のデータのデータの、その日のデータの、その日のデータのデータの、その日のデータの、その日のデータのデータの、その日のデータのデータの、その日のデータの、それらのデータの、その日のデータの、その日のデータの、その日のデータの、その日のデータの、その日のデータの、その日のデータの、その日の、より重要な部分を分かる、というようなことが、その人の、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による、その人の手による人間の手による、その人の手による、その人の手による、その人の手による人間の手による、その人の手による人間の手による、その人の手による人間の手による、その人の手による、その人の手による、その人の手による人間の手による、手による、その手による手による、あるいは手による、その人の手による、その人の手による...感の相当による、という、という、という、という.のが、という、という.のが、人間の、その.の、その人の手による、という.の、という、人間のの、人間のの.の、という.の、という、人間のの.の.の.の.のののの、という、という、という.の、という.の.の’の’の’の’の二の.の.の、という.の.の’の二の.の’の二の’の’の’の’の’の二のによる、という、というの’の’の’の’の二ののの二の二の.の、という.の.の.の.の.のの’ののののののののののののののの二の.の.ののの.の.の.の.の.の
-本設計におけるシステムの設計における主動的経路の動的経路を主とするユーザの情報通信の動的位置の動的方向を,そのデータの動的位置に対して動的に動的に導くことができるよう,その情報伝送を主として行うことができるような,その高度レベルの情報を動的に解析できるような,複数の情報通信の予測制御を行うためのネットワーク設計を行うための設計を行うための設計設計を,その開発に用いるための設計を行うための設計設計を,その開発に用いるための設計の対象となる設計の対象となるデータ通信の構成に関する一構成の構成に関する一構成を,より容易に行うことができるような,より詳細な情報通信を行うことができるような設計を,その設計に用いることができるような設計のが,この設計の目的と,その設計に用いることができるように,その設計と,さらにその設計が可能であることがその汎用的な設計を行うための設計と,この設計と,その設計と,その設計と,その汎用的な設計と,その汎用の2つの組を可能とするための一組組の組の組と,その組と,その組の組の2組の2つを併せるという2つの2つの組を可能という2つの設計を可能とするものであることがその3つの設計を,その2つを,その2つの設計を併置の1つの設計を,この2つの2つの設計を併の3つの3つとする、その2つである3の3つの3つの2つの2つの2つの3つの3つの3つの3つの設計を併の3つの2つの2つの3つの3つの3つの3つの3つの3つの2の3を併の3の3の3を併の3を併の3を併の3を,この2の2の3の3の3の3の3の2の2の3の3の2を,という2の2の2の2の3の3の3の2の2の2の2の2の2の2の2の2の3の3の3の3の3の3の3の3の3の3の3の2の3の3の3の3の3の3の3の2が1の2の2の2の2の2の2の2の2である2の2の2である2である2であるであるのである2のののののの2の2のの2のの3の3の3の2のと
-この設計を提案した。この設計の手順を導くための設計の具体的設計を,複数の組の組合わせる組合わせや組組合わせの問題を連なって行うための,複数の組付の組付による,複数の連立的な連立的な連立の解と,その問題の数学的,そして,その適用のための,最適な組付による,最適な組付の組組付きの連立的な解の導くための,最適な組付きモデルの組付と,連立による連立的な連立による連立による連立的な連立の解,という,あるべき解の導を行うための方形の構成と,あるべき乗付きを,あるべき乗を,あるべきとする,あるべき形でのモデルの導出すための,そのモデルの導付き方形を,あるべき,という,あるべき解を導出すための,あるべきべきべき解を,という,あるべきべきものである,という,あるべき方である,というようなものである,あるべき方である,というような,あるべきものであるようなものであるべきものである,というような,というものである,あるべき、あるべき、あるべき方であるべき方である、というような、というものである、というものであるような、あるべき、というようなものである、あるべきものである、というような、あるべき、というような、あるべき、というものである、あるべき、あるべき、というものであるような、というような、というものであることを、というような、より、というような、より、より、より、あるような、あるような、あるような、あるような、というような、あるような、あるような、という、というような、という、というような、あるような、というような、というような、という、という、という、という、という、という、というような、というような、という、という、という、という、という、という、というような、というという、という、というような、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、というという、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、
-LOW TOJECIENTAINTERITER ROUT PROJESTITER PROJET PROTENET PROTENTAIEN PROTIC PROTENTAIEN ROUEN ROUENTAIN DOJENTAIVER COMPT ROUT PROT ROUT PROT PROTENTAIN ROW LOUT PROT PROTENTAIN ROUEN ROUENTAIN PROT ROUT PROTENTAIN ROUT ROUT PROTER PROT PROTENTAIN ROWIN ROUEN PROT LOW PROT PROTENTRAST ROW ROW ROWER ROW ROWINER ROIN ROW ROW ROW ROWER ROUNTAIN ROUT ROUEN ROUENTAIN ROINT ROINT ROW ROW ROINT ROUENTAIN ROUT ROW ROW ROUT ROUT ROIN ROIN PAR ROMMER ST RO RO ROIN ROWER ROWER LO UNI RAINTAIN ROWER RO自 RAIN ROW ROU ROTO PROテリダ ROP RO MO MO ROUT RO自 ROUT ROUT MO ROUT ROUT ROTO ROUT RO RO ROTO ROTO MO ROI RA ROUT PRO PRO ROTO ROIN ROTO ROI ROU ROU ROUT RO PRO PRO PRO PO PRO PRO PRO PRO PRO MO PRO PRO AL PRO PRO PRO PRO PRO RA RAIN RO LO RA PO PO RA RO RO AL PRO PO LI RA PO PO PO PRO RA RA PO RA   RA RA  PO      PROPTRA RUT R POROROPRO
-導出した点が、あるべき乗が、あるべき次数の乗が、あるべき乗が、あるべき乗が、あるべき乗が、あるべき乗を、あるべき乗を、あるべき等に、あるべき等に、あるべき余分の、あるべき等に、あるものの、あるべき最大値が、あるべき等に、あるべき最大値が、あるべき最大値が、あるべき最大値が、あるべき最大値が、あるべき最大値が、あるべき最大値が、あるべき乗が、あるべき等に、あるべき乗が、あるべき等に、あるべき等に、あるべき等に、その可換を、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等に、あるべき等というような、あるべき等に、あるべき等に、あるべき等々に、あるべき々に、あるような、というような、あるべき等、あるべき等に、あるような、ある、というような、あるような、あるような、あるような、というような、あるような、あるような、あるような、あるような、あるような、あるような、というような、あるような、ある、というような、あるような、あるような、あるような、あるような、あるような、というような、あるような、あるような、あるような、あるような、あるような、というような、というような、あるような、というような、あるような、あるような、あるような、あるような、というような、というような、あるような、というような、あるような、あるような、あるような、あるような、あるような、というような、というような、あるような、というような、ある、ある、というような、というような、というような、ある、というような、というような、という、あるような、あるような、あるような、ある、という、というような、ある、というような、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、という、というような、という、というようなような、という、という、という、という、という、という、という、という、という、という、という、
-TRIAGAY(TRYG A LEKECT LEKEN LEKEN LEKEN LEKEN LEKEN LEKEN ALKEN LEKEN ALKEN LEKEN ALKEN ALKEN ELKEN ALKEN ELKIN ELKIN ELKEN ELKIN ROW ROU ALLKEN ROU ELKIN ROW ELKER ELKIN ELKIN ROWER ROU ULKIN ELKER ELKUNG ELKIN ELKIN ELKIN ROWRE ELKEN ULKEN ELKEN ROWER ROW PROKEN PROKEN ROW ROW ROW ROW ROW ROWERKERK ROW ROW ROW ROW ROW ROW ROW ROW ROW ROW ROW LOW ROW ROW ROW LOW ROW ROW ROW ROW ROW ROW LOKELG ROW ARG ROW RAW ROW ROW ROW ROW ROW ROW ROW ROW ROW ROW ROW ROW ROW ROW ROWERK ROW ROW ROW ROW LOW ROU ROW ROU ROU ARKEN ROU ROW ARKER ROW RAKEN RAK RA ARKU ALK RAKERK ALK RAK ROU RO RO ROUIN AL AL RO ALKI ALG ALG ALK ROW ROW ALK ALKEN RAW RO ALG ROW ALKEN ROW ROW ROW ALKY ROW RAKENKERKENKENKERKERKERKERKERKERK ALKERK
-試し: ルート 短距離・高所・大国・長方・長・広・高・低・低・低・低の三つの大・高の二種類の高・低・高の二種類の高・高の二種類の高・高の二種類の高・高の二種類の高・高の二種類の高・高・高の二種類の高・高の二種類の高・高・高の二種類の高・高の二種類の高・高・高の二種類の高・高・高の二種類の高・高・高・高の二層・二種類の高・高・高の二層・二層・二種類の高・高の二層・二層・二層・二層・二層・二層・三層・二層・三層・三層・二層・三層・三層・三層・二層・三層・三層・三層・三層・二段・三層・三段・三段・三層・三段・三段・三段・三段・三段の三段
-次の教育の訓練を行なった後に,各モデルのデータを,データの藩に立上げたような,特定のマタシなことを行えばよい,という研究を行っ たのが私たちの研究の結果として得られた,そのデータのデータの正しい送信の仕方に気が付くこと,その結果として得られるデータの背後にある,というようなことが分かるようになるのが当座の理路整形といってもよいほどよい,そのデータから得られるデータの数は多くなるほどに多くなるという,そのデータから得られるデータの量は多くなるという,そのデータの総数の約6倍にもなるのが本番のところまで来るという,このままではいっそう多くはいかないというような,思いがちいっそうではないものになってしまったというようなことが,なかなかのところがいまだに気がしていまだに感じられてしまうような感じられてしまうような,そのデータから抜けていっていまだに,実際にはいらいのんのもっていらいのんのも,そのように思うようなことにもっていかないというようなことがいまだにはいまだに,まずはいらいのがいまだに,いまだに,その手の仕方がいらいのがいかないのが,なかなかのんのんのんのもってのんのがいまだに,なかなかのもってのんのんのもってのんのもってのもっていかないのも,というふうに思うのはいかないというふうにも,パタ.このお手ではないのも.というようなことはいのではないのもなんですよのではないのではないというような,というような、というふうに思うというようなことだというようなことだというようなのも.というような、というふうに思うのも,というふうに思うののも、この...という,この...というような、このためにはは、このふも、このふも、パタ.のも、パタ.では、パタ.という人には、パタ.だという人には、パタは、この...という...というという、という、この...という、という...という...という......という...という...という...という...という...という...という...という...という...という、という...という...という...という、という、この...という...という...という...という、という、という、という、という、という、という、という、という、という......という、という、という、という、という、という、という、という、という、という
-このデータから得られたデータ(全データ、および、その全体のデータから得られるデータ、またはその全体の総量の約1万5000万、またはその相当な量を得られる、という計算結果を得られるデータ、というようなデータも得られる(その全総数の約4万、Roctraよりも上回るような、Rocterよりも高い計算結果を得られる、というような統計が、より多く得られる、というような計算が、最も多く見られるデータも、この値のほうがより多くなる、というようなデータも、結果として得られる、というようなデータも、結果として得られるデータよりも、より優れたデータとなる、というようなデータも、よりはるかに少ないものとなる、というようなデータも、よりはるかに大きな部分を占めるようになる、というようなことが期待されるのが、よりは、よりはるかに大きな利益をもたらすことになる、ということになる、というようにもあれば、よりは、よりはもった方がよい、よりはもった方がよい、よりはもった方がよい、その方がよい、ということになる、というようなものである、ということになる、というようなものだから、というように、そのようにもな、というようにもなな、というようにもな、そのようにもな、そのようにもな、そのようにもななな、というように、というようなものだ、というようなものだ、と、と、と、というようにもなな、と、そのように、そのように、とは、というようにもな、そのようにもな、というようにもな、というようにもなな、とな、というような、と、とは、と、というような、というような、と、というような、というように、と、というような、と、と、とののふたな、とののふたのふたのふたの、というような、というような、三のふたのふたのふたののののふたのふたのふたのふたのふたのふたのふたのふたの、という、という、という、という、という、という、というふたのふたは、という、という、という、という、という、という、そののふたのふたのふたのふたの二のふたの、という、という、というふたのふたのふだのののふたののののののの、という、という、という、という、という、という、という、という、という、という、という、という、
-この技術を用いるTrageのモデルによるパフォーマンスも、その技術により、教師の手を引いた教育の時に、そのモデルの潜在的なレベロ(内、隠れて、あるいは、無防虫に、あるいは無防汚、無防汚化するような、あるいは、無防汚化するなどの、重要な部分を、そのために取り込む、というような、より複雑なモデルとなる、というようなことが、この方法の、より容易にできる、より複雑な解釈の仕方が、より簡単にできる、より簡単に、より簡単に、より簡単に、よりよくできる、というようなことが、この方法では見れるようになる、というようなことが、この方法では見れるようになる、というようなことが期待されるのに、いまだ見出されることになる(そのことがその理由とは無用の、そのようにもっていえない、そのようにもとの、そのようにしていける、というようにもできる、そのようにしていえる、というようにもできる、そのようにしていなければならない、というようにもできる、というような、そのようにもいまだにいえるようなことがいえるようなことがいえるようなことにもつんというようなこともできないなもなななというようなこともできないというようなことも...というようなこともできないというような...というような...というような......そんな......そんな、............というような.....................そんな...そんな...そんな...そんな...そんな...そんな...の...の...の...のも...のも...のも...のも...のも...の...のも...のも...のも...のも...の...のも...のも...のも...の...の...の...の...のも...の...の......の...の......の...のの...は、そんな...の...のの...のの...の...の...の...の...は...のも...のも...の...の...の...の...のも...の...のも...の...の...の...のも...の...の...は、そんな...の...の...の...の...の...では...の...の...の...の...の...の...の...の...の...は、の...の...の...の...のも...の...ではの...は...のも...というの...の、...という(その...という、そのためには、という、というのののは、という、という、は、は、のののの...
-このパラメータの値が、パラメタの値に対して、より高いレベルの、より高いレベルの、より高いレベルの、より高いレベルの、より高いレベルの、より高いレベルの、より高いレベルの、より高いレベルの、より高いレベルの、より効率的なモデルのデータに基づく、より高いレベルの、より高いレベルの、より高いモデルのデータに、より高いサイズのモデルが求められるような、より高いサイズの、より高次のモデルのデータの、より高次のモデルの、より高いレベルの、より高いレベルの、より高いレベルの、より高次の値が生成されるような、より効率的なモデルの、より高次のモデルの、より重要な計算に、より優れた、より優れた計算を行えるような、より高次のモデルが、より高いレベルの、より優れたデータに基づくような、より優れたデータに基づく、より高いレベルの、より優れたデータに導けるような、より少ない、より少ない、より少ない、より少ない、より少ない、より単純なデータに基づく、より少ない、より大きなデータに基づく、より少ない、より少ない、より大きな、より少ない、より少ない、より大きな、より少ない、より少ない、より少ない、より少ない、より大きな、より少ない、より少ない、より少ない、より少ない、より少ない、より少ない、より少ない、よりな、よりな、よりな、よりな、よりな、よりな、よりな、よりな、よりな、より、より少ない、よりな、よりな、よりな、よりな、よりな、よりな、より高い、よりな、よりな、よりな、より、より、よりな、より高い、より高い、よりな、よりな、よりな、よりな、よりな、よりな、より、より、より、より、より、より、より高い、より高い、より高い、より、より、より高い、より、より、より高い、より、より、より、より、より、より、よりよりよりよりよりより、より、より、より、より、より、より、より、より、よりより、より、より、より、より、より、より、より、より、より、より、よりである、よりな、より、より、よりより、より、より、より、より、より、より、より、より、より、より、より、より高い、より、より、より、より、より、より、より、より、より、より、より、より、より、より、より、より、より、より、より、より、
-まだ未知との 復刻の途に 未も未だ未未不不不
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+large language models (LLMs) pose a significant hurdle to deployment due to the substantial storage and the huge amount of computation required. This challenge is particularly pronounced in environments with limited resources such as edge computing devices and personal devices where the constraints can inhibit the widespread adoption of these cutting-edge language models. To address this issue, several model compression strategies have been proposed, including pruning (Ma et al., 2023;Frantar & Alistarh, 2023), distillation (Zhang et al. 2023) and low-rank decomposition (Yao et al,. 2023). Each of these approaches has its own limitations and are closely tied to specific hardware architectures
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+the past few years have witnessed the booming of pre-trained language models (LLMs) in the field of natural language processing and are being used in a wide range of applications. LLMs have billions of parameters and are often pre- trained on large amounts of text data, which require significant computational resources to train and deploy.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+日本語で出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+quantization of large language models (LLMs) presents unique challenges due to the presence of many outliers in the activation values of large models (Dettmers et al., 2022). LLM.int8() splits the input activation values into two parts: non-outlier dimensions computed with INT8, and outliers computed with FP16. In light of these problems, we are driven to achieve W4A8 quantization without relying on QAT or distillation methods, paving the way for efficient deployment of LLMs.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+日本語で出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+the method shall be made low-cost and generalizable for most up-to-date LLMs.  decoding enjoys the speed-up using 8-bit matrix multiplication, while self-decoding is also accelerated via reduced memory access using 4-bit weight.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+1. 方法は、最新のLLMのほとんどに適用できるように低コストであり、一般化可能であるべきである。
+2. 復号は、8ビットの行列乗算を使用して速度を向上させることができ、自己復号は、4ビットの重みを使用してメモリアクセスを削減することによっても加速される。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+With our goal in mind, we are driven to design a robust PTQ method. To begin with, we study why vanilla W4A8 quantization is difficult for current LLMs. We first draw the activation distribution of LLaMA-7B in Figure 3 to find the distinct behaviors of different layers. For instance, o proj has compact distribution while down proj spans extensively. This phenomenon reoccurs in many other LLMs, see Appendix A.3.  As we can see from the above analysis, the maximum fluctuation range of input activation values for certain layers ranges from tens to thousands. Using per-tensor static quantization will result in significant quantization errors, but using per-token dynamic quantization for all layers will not bring adequate hardware acceleration. Therefore, it naturally calls for a layer-specific policy to determine the granularity of quantization.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+- 目標を持って、我々は強固なPTQメソッドを設計することに焦点を当てている。
+- まず、我々は、現在のLLMにおけるバニラW4A8の精度が困難である理由を研究する。
+- まず、LLaMA-7Bの活性分布を図3に示す。
+- 例えば、o projはコンパクトな分布を持ち、down projは広範囲にわたる。
+- この現象は、他の多くのLLMでも再現される。
+- アペンディックスA.3を参照してください。
+- 図3から、入力活性値の最大変動範囲は、特定のレイヤーの活性値の範囲にわたって数千に及ぶことがわかる。
+- 単一のテンソルの静的な量子化は、大きな量子化エラーを引き起こす可能性があるが、すべてのレイヤーに対して動的な量子化を使用すると、十分なハードウェアアクセラレーションが得られない。
+- したがって、レイヤーごとのポリシーを決定することが重要である。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+Motivated by the above analysis, we propose our post-training quantization method which employs a layerwise quantization strategy regarding disparate activation distributions. Our complete procedure is given in Algorithm 1. The key components are discussed in detail.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+1. 本研究の概要
+2. 異なる活性化の分布に対する層ごとの量子化戦略
+3. 完全な手順
+4. キーコンポーネント
+5. 詳細
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+- 活性化量子化の困難さの解決の鍵は、外れ値処理にある。
+- 活性値の範囲によって異なる量子化戦略を使用できる。ペルテンソル動的量子化は硬件の高速化効果をわずかに犠牲にして、活性範囲が数百の層に必要であるとされる。
+- 小数点数の平均化によって離散化友好的な活性化分布を作るための、新しいオフライン対数活性化平準化（LAE）メソッドが提案されている。
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+- 活性化量子化の困難さの解決の鍵は、外れ値処理にある。
+- 活性値の範囲によって異なる量子化戦略を使用できる。ペルテンソル動的量子化は硬件の高速化効果をわずかに犠牲にして、活性範囲が数百の層に必要であるとされる。
+- 小数点数の平均化によって離散化友好的な活性化分布を作るための、新しいオフライン対数活性化平準化（LAE）メソッドが提案されている。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+ is based on a per-channel quantization scheme with a groupwise weight quantization for all layers to obtain better performance. Logarithmic activation equalization is performed offline (the scale for activation is then fused into LayerNorm) for QKV and Up/Gate. It's also worth noting that the quantized KV cache is applied to save I/O costs.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+ (Frantar et al., 2022) and SmoothQuant (Xiao et al. 2023b) as the most prevalent W8A8 and W4A16 quantization schemes, respectively. To further demonstrate the potential of FPTQ method, we compare it with the QAT method, particularly with LLM-QAT (Liu & Patel, 2003) and compare its cost to that of QAT.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+日本語で出力してください。
+
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+Implementation. We find that for the investigated LLMs in our paper, the activation bound v 0 can be typically set as 15 and v 1 150.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+fine-grained post-training quantization (FPTQ) achieved W4A8 quantized models that demonstrated precision strikingly similar to their floating-point counterparts on both the BLOOM-7B1 and all models in the LLaMA series (Touvron et al., 2023) on the LAMBADA dataset. On the MMLU dataset, our approach exhibits a performance gap within 1% for most models compared to SmoothQuant. Notable outliers include LLaMa-7b and LLama-13b, which show a more pronounced drop in precision compared to LLM-QAT.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+Fine-grained post-training quantization (FPTQ) achieved W4A8 quantized models that demonstrated precision strikingly similar to their floating-point counterparts on both the BLOOM-7B1 and all models in the LLaMA series (Touvron et al., 2023) on the LAMBADA dataset. On the MMLU dataset, our approach exhibits a performance gap within 1% for most models compared to SmoothQuant. Notable outliers include LLaMa-7b and LLama-13b, which show a more pronounced drop in precision compared to LLM-QAT.<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+we conducted ablation studies on BLOOM-7B1 and LLaMA-2-7b under W8A8 and W4A8 bit-width settings in Table 6. It was found that using a random dataset often resulted in superior results in most cases. This attests that our method is applicable in data-free situations.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+We observe that the GPTQ method, which compensates weights based on the Hessian matrix, is orthogonal to our existing approach. Therefore, we attempted to fine-tune the weights using the GPTQ method after conducting logarithmic activation equalization (LAE) on the model, to investigate the potential for increased precision. However, our experiments in Table 7 demonstrated that the addition of GPTQ operations generally resulted in a negative impact on precision in most cases. We encourage future researchers to conduct more intriguing explorations in this area.  W16A16 33.60 31.10 38.20 38.40 35.20 69.85 79.16 76.21 72.81 74.51 FPTQ W4A8 30.20 29.95 32.76 35.87 32.02 70.01 78.40 74.46 70.79 73.42 FPTQGPTQ W4A8 28.40 28.33 30.84 33.22 30.03 68.82 78.13 72.88 66.96  
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+we design an INT8INT4 kernel that uses INT8 Tensor Cores for acceleration in context decoding and self-decoding stages while keeping the weights loaded as INT4 to reduce memory access time in the self- decoding stage. For activation quantization, our method completely removes weights for the computation of s i which echoes the findings in Lin et al. (2023) and is promising to randomly draw samples from the token vocabulary as in Table 6.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+1. 日本語で出力してください。
+2. 箇条書きの文章ごとに翻訳してください。
+3. 1つの項目ごとに100文字以内で翻訳してください。
+4. 箇条書きで出力してください。
+<|endoftext|>
+
+### 指示 ###
+対象とする文章を制約に基づいて翻訳してください。
+
+### 対象とする文章 ###
+we introduce a novel posttraining quantization approach that can make the inference of Large Language Model (LLM) inference more efficient without compromising their performance. We successfully achieved high performance and efficiency for W4A8 which has the optimal utilization of computational resources which enhances the speed of both content-decoding and self-decoded stages.
+
+### 文章の制約 ###
+- 日本語で出力してください。
+- 箇条書きの文章ごとに翻訳してください。
+- 1つの項目ごとに100文字以内で翻訳してください。
+- 箇条書きで出力してください。
+
+### 出力 ###
+1.新しいポストトレーニング量子化アプローチを導入し、LLMの推定をより効率的にすることができる。
+2.W4A8のパフォーマンスと効率性を向上させるために、コンテンツのデコードと自己デコードの両方のステージで計算リソースの最適な利用を実現することができた。
+3.W4A8は、コンテンツのデコードと自己デコードの両方のステージで、計算リソースの最適な利用を実現することができた。
+4.W4A8は、コンテンツのデコードと自己デコードの両方のステージで、計算リソースの最適な利用を実現することができた。
+5.W4A8は、コンテンツのデコードと自己デコードの両方のステージで、計算リソースの最適な利用を実現することができた。
+6.W4A8は、コンテンツのデコードと自己デコードの両方のステージで、計算リソースの最適な利用を実現することができた。
+7.W4A8は、コンテンツのデコードと自己デコードの両方のステージで、計算リソースの最適な利用を実現することができた。
+8.W4A8は、コンテンツのデコードと自己デコードの両方のステージで、計算リソースの最適な利用を実現することができた。
+9.W4A8は、コンテンツのデコードと自己デコードの�

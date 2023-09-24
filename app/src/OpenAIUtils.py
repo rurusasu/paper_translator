@@ -91,8 +91,9 @@ def get_message(
 
 
 if __name__ == "__main__":
+    print(os.getenv("OPENAI_API_KEY"))
     # print(OpenAIModelList())
 
-    text = "大谷翔平について教えて"
-    message = get_message(text)
-    print(message)
+    # text = "大谷翔平について教えて"
+    # message = get_message(text)
+    # print(message)
