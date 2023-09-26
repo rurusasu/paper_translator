@@ -1,32 +1,145 @@
-from llama_index.llms import LlamaCPP
+from typing import Any, Literal
 
 
-def LlamaCppWrapper(
+def _create_llama_index_cpp_model(
     model_url: str | None = None,
     model_path: str | None = None,
-):
+    temperature: float = 0.0,
+) -> Any:
+    """
+    llama_indexパッケージを使用して、LlamaCPPモデルを生成する関数
+
+    Args:
+        model_url (str | None): モデルのURL
+        model_path (str | None): モデルのパス
+        temperature (float): 生成される文章の多様性を調整する温度パラメータ
+
+    Returns:
+        LlamaCPP: 生成されたLlamaCPPモデル
+    """
+
+    from llama_index.llms import LlamaCPP as LlamaIndexCPP
+
     # GPU を使用する場合の設定
     n_gpu_layers = 40
     n_batch = 16
     n_ctx = 4096
 
-    # LlamaCPP の設定
+    # モデルのURLまたはパスを取得する
     if isinstance(model_url, str):
         model_url_or_path = model_url
     elif isinstance(model_path, str):
         model_url_or_path = model_path
+    else:
+        raise ValueError("Either model_url or model_path must be specified.")
 
-    model = LlamaCPP(
-        model_url=model_url_or_path,
-        model_path=model_url_or_path,
-        temperature=0.1,
-        max_new_tokens=2048,
-        context_window=3900,
-        model_kwargs={
-            "n_gpu_layers=": n_gpu_layers,
-            "n_batch=": n_batch,
-            "n_ctx=": n_ctx,
-        },
-        verbose=True,
-    )
+    try:
+        # LlamaCPPモデルを生成する
+        model = LlamaIndexCPP(
+            model_url=model_url_or_path,
+            model_path=model_url_or_path,
+            temperature=temperature,
+            max_new_tokens=2048,
+            context_window=3900,
+            model_kwargs={
+                "n_gpu_layers=": n_gpu_layers,
+                "n_batch=": n_batch,
+                "n_ctx=": n_ctx,
+            },
+            verbose=True,
+        )
+        return model
+    except FileNotFoundError as e:
+        print(
+            f"File not found error occurred during LlamaCPP model creation: {e}"
+        )
+        raise
+    except Exception as e:
+        print(f"Error occurred during LlamaCPP model creation: {e}")
+        raise
+
+
+def _create_langchain_cpp_model(
+    model_path: str | None = None,
+    temperature: float = 0.0,
+) -> Any:
+    """
+    langchainパッケージを使用して、LlamaCPPモデルを生成する関数
+
+    Args:
+        model_path (str | None): モデルのパス
+        temperature (float): 生成される文章の多様性を調整する温度パラメータ
+
+    Returns:
+        LlamaCPP: 生成されたLlamaCPPモデル
+    """
+    from langchain.llms import LlamaCpp as LangchainCPP
+
+    # GPU を使用する場合の設定
+    n_gpu_layers = 40
+    n_batch = 16
+    n_ctx = 4096
+
+    try:
+        # LlamaCPPモデルを生成する
+        model = LangchainCPP(
+            model_path=model_path,
+            temperature=temperature,
+            max_tokens=2048,
+            n_batch=n_batch,
+            n_ctx=n_ctx,
+            n_gpu_layers=n_gpu_layers,
+            verbose=True,
+        )
+        return model
+    except FileNotFoundError as e:
+        print(
+            f"File not found error occurred during LlamaCPP model creation: {e}"
+        )
+        raise
+    except Exception as e:
+        print(f"Error occurred during LlamaCPP model creation: {e}")
+        raise
+
+
+def create_llama_cpp_model(
+    package_name: Literal["llama_index", "langchain"],
+    model_url: str | None = None,
+    model_path: str | None = None,
+    temperature: float = 0.0,
+) -> Any:
+    """
+    LlamaCPPモデルを生成する関数
+
+    Args:
+        package_name (Literal["llama_index", "langchain"]): パッケージ名
+        model_url (str | None): モデルのURL
+        model_path (str | None): モデルのパス
+        temperature (float): 生成される文章の多様性を調整する温度パラメータ
+
+    Returns:
+        LlamaCPP: 生成されたLlamaCPPモデル
+    """
+    # モデルのURLまたはパスを取得する
+    if isinstance(model_url, str):
+        model_url_or_path = model_url
+    elif isinstance(model_path, str):
+        model_url_or_path = model_path
+    else:
+        raise ValueError("Either model_url or model_path must be specified.")
+
+    if package_name == "llama_index":
+        model = _create_llama_index_cpp_model(
+            model_url=model_url_or_path,
+            model_path=model_url_or_path,
+            temperature=temperature,
+        )
+    elif package_name == "langchain":
+        model = _create_langchain_cpp_model(
+            model_path=model_url_or_path, temperature=temperature
+        )
+    else:
+        raise ValueError(
+            f"package_name must be one of ['llama_cpp', 'langchain'], but got {package_name}."
+        )
     return model

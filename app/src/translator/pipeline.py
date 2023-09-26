@@ -2,6 +2,7 @@ from typing import Any, List, Optional
 
 from langchain.embeddings import HuggingFaceEmbeddings
 from llama_index import (
+    Document,
     ServiceContext,
     SimpleDirectoryReader,
     StorageContext,
@@ -45,13 +46,6 @@ class Pipeline:
             )
             self.callback_manager = CallbackManager([self._llama_debug_handler])
 
-        # Storage Context の作成
-        self._storage_context = StorageContext.from_defaults(
-            docstore=SimpleDocumentStore(),
-            vector_store=SimpleVectorStore(),
-            index_store=SimpleIndexStore(),
-        )
-
         # Embeddings の設定
         self._embed_model = embed_model or HuggingFaceEmbeddings(
             model_name=embed_model_name
@@ -66,7 +60,17 @@ class Pipeline:
 
         self._prompt_template = self._load_prompt_template(prompt_temp_path)
 
+        self._storage_context = None
         self.vector_store_index = None
+        self.node_parser = None
+
+    def _create_strage_context(self) -> None:
+        """Storage Contextを作成する関数"""
+        self._storage_context = StorageContext.from_defaults(
+            docstore=SimpleDocumentStore(),
+            vector_store=SimpleVectorStore(),
+            index_store=SimpleIndexStore(),
+        )
 
     def _load_prompt_template(self, prompt_temp_path: str) -> PromptTemplate:
         """Prompt Templateを読み込む関数
@@ -190,10 +194,10 @@ class Pipeline:
             template = PromptTemplate(prompt_template)
 
         try:
+            prompt = template.format(prompt_text=prompt)
             # LLMに指示を出す
-            response = self._service_context.llm.generate_response(
-                prompt=template.fill(prompt),
-                service_context=self._service_context,
+            response = self._service_context.llm.complete(
+                prompt=prompt,
             )
         except Exception as e:
             # エラーが発生した場合
