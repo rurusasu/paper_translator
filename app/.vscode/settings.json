@@ -7,7 +7,7 @@
     "editor.trimAutoWhitespace": true,
     "[python]": {
         "editor.codeActionsOnSave": {
-            "source.organizeImports": "always",
+            "source.organizeImports": "always"
         },
         // 拡張機能のBlack Formatterを使う場合には必ず指定する
         "editor.defaultFormatter": "ms-python.black-formatter",
@@ -24,7 +24,8 @@
     ],
     "python.analysis.importFormat": "absolute",
     "python.testing.pytestArgs": [
-        "src"
+        "${workspaceFolder}",
+        "${workspaceFolder}/venv/Lib/site-packages",
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
