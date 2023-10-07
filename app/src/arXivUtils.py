@@ -1,6 +1,6 @@
 import datetime as dt
 import os
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from urllib.error import HTTPError
 
 import arxiv
@@ -16,7 +16,7 @@ base_dir = "./data"
 document_dir = base_dir + "/documents"
 
 
-def generate_query(keyword: str, n_days: int) -> str:
+def _generate_query(keyword: str, n_days: int) -> str:
     """
     検索クエリを生成する関数
 
@@ -47,7 +47,7 @@ def generate_query(keyword: str, n_days: int) -> str:
         return ""
 
 
-def search_arxiv(query: str, max_result: int) -> arxiv.Search:
+def _search_arxiv(query: str, max_result: int) -> arxiv.Search:
     """
     arXiv APIを使って，論文情報を検索する関数
 
@@ -72,7 +72,7 @@ def search_arxiv(query: str, max_result: int) -> arxiv.Search:
         return None
 
 
-def create_paper_list(
+def _create_paper_list(
     search: arxiv.Search, categories: List[str] = CATEGORIES
 ) -> List[Dict[str, str]]:
     """
@@ -109,7 +109,7 @@ def create_paper_list(
         return []
 
 
-def get_paper_info_from_arxiv(
+def _get_paper_info_from_arxiv(
     query: str, max_result: int, categories: List[str] = CATEGORIES
 ) -> List[arxiv.Result]:
     """
@@ -124,12 +124,12 @@ def get_paper_info_from_arxiv(
         result_list (list): 論文情報のリスト
     """
     # arXiv APIを使って，論文情報を検索
-    search = search_arxiv(query, max_result)
+    search = _search_arxiv(query, max_result)
     if search is None:
         return []
 
     # 検索結果から，カテゴリーに含まれる論文情報のリストを作成
-    result_list = create_paper_list(search, categories)
+    result_list = _create_paper_list(search, categories)
 
     return result_list
 
@@ -153,10 +153,10 @@ def get_paper_info(
         result_list (list): 論文情報のリスト
     """
     # 検索クエリを生成
-    query = generate_query(keyword, n_days)
+    query = _generate_query(keyword, n_days)
 
     # arXiv APIを使って，論文情報を取得
-    result_list = get_paper_info_from_arxiv(query, max_result, categories)
+    result_list = _get_paper_info_from_arxiv(query, max_result, categories)
 
     return result_list
 
@@ -185,13 +185,15 @@ def get_paper_info_by_id(entry_id: str) -> arxiv.Result:
     return paper
 
 
-def download_pdf(entry_id: str, document_dir: str) -> tuple:
+def download_pdf(
+    entry_id: str, document_root_dir_path: str
+) -> Tuple[str, str, str]:
     """
     arXiv APIを使って，論文のPDFを取得する関数
 
     Args:
         entry_id (str): 論文のID
-        document_dir (str): PDFを保存するディレクトリのパス
+        document_root_dir_path (str): PDFを保存する親ディレクトリのパス
 
     Returns:
         dir_path (str): PDFを保存したディレクトリのパス
@@ -204,7 +206,7 @@ def download_pdf(entry_id: str, document_dir: str) -> tuple:
         dir_name = (
             paper.title.replace(" ", "_").replace(":", "").replace(",", "")
         )
-        dir_path = f"{document_dir}/{dir_name}/"
+        dir_path = f"{document_root_dir_path}/{dir_name}/"
 
         pdf_name = f"{dir_name}"
         os.makedirs(dir_path, exist_ok=True)
@@ -212,6 +214,7 @@ def download_pdf(entry_id: str, document_dir: str) -> tuple:
         cnt = 0
         while True:
             try:
+                print(f"Downloading {pdf_name}...")
                 pdf_path = paper.download_pdf(
                     dirpath=dir_path, filename=pdf_name + ".pdf"
                 )
@@ -221,25 +224,28 @@ def download_pdf(entry_id: str, document_dir: str) -> tuple:
                 cnt += 1
                 if cnt == 3:
                     raise e
+            else:
+                print("Downloaded!")
 
-        return dir_path, pdf_path, pdf_name
     except Exception as e:
         # エラーが発生した場合は、Noneを返す
-        print(f"Error in download_pdf: {e}")
-        return None, None, None
+        raise (f"Error in download_pdf: {e}")
+    else:
+        print("Completed!")
+        return dir_path, pdf_path, pdf_name
 
 
 if __name__ == "__main__":
     keyword = "GAN"  # 検索キーワード
-    result_list = get_paper_info(keyword, is_debug=True)
-    print(result_list[0].title)
-    print(result_list[0].summary)
-    print(result_list[0].entry_id)
-    print(result_list[0].pdf_url)
-    # print(result_list[0].published)
-    # print(result_list[0].authors)
-    # print(result_list[0].categories)
-    # print(result_list[0].doi)
-    # print(result_list[0].journal_ref)
-    # print(result_list[0].comment)
-    get_pdf(result_list[0].entry_id)
+    CATEGORIES = [
+        "cs.AI",
+        ...,
+    ]
+    result_list = get_paper_info(
+        keyword, categories=CATEGORIES, n_days=14, max_result=10
+    )
+    print(f"# Title: \n{result_list[0]['title']}")
+    print(f"# Summary: \n{result_list[0]['summary']}")
+    print(f"# entry_id: \n{result_list[0]['entry_id']}")
+    print(f"# pdf_url: \n{result_list[0]['pdf_url']}")
+    download_pdf(result_list[0]["entry_id"])
