@@ -22,6 +22,7 @@ class Pipeline:
         embed_model_name: str = "sentence-transformers/all-MiniLM-l6-v2",
         embed_model: Optional[Any] = None,
         prompt_temp_path: str | None = "prompt_templates/default.txt",
+        service_context: Optional[ServiceContext] = None,
         is_debug: bool = False,
     ) -> None:
         """
@@ -34,8 +35,14 @@ class Pipeline:
             prompt_temp_path (str | None, optional): Prompt Templateのパス. Defaults to "prompt_templates/default.txt".
             is_debug (bool, optional): デバッグモードかどうか. Defaults to False.
         """
+        self._prompt_template = self._load_prompt_template(prompt_temp_path)
         self.is_debug = is_debug
+        self._storage_context = None
+        self.vector_store_index = None
+        self.node_parser = None
         self.callback_manager = None
+        self._embed_model = None
+        self._service_context = None
 
         if is_debug:
             # デバッグの設定
@@ -46,23 +53,21 @@ class Pipeline:
             )
             self.callback_manager = CallbackManager([self._llama_debug_handler])
 
-        # Embeddings の設定
-        self._embed_model = embed_model or HuggingFaceEmbeddings(
-            model_name=embed_model_name
-        )
-
         # Service Context の作成
-        self._service_context = ServiceContext.from_defaults(
-            llm=llm_model,
-            embed_model=self._embed_model,
-            callback_manager=self.callback_manager,
-        )
-
-        self._prompt_template = self._load_prompt_template(prompt_temp_path)
-
-        self._storage_context = None
-        self.vector_store_index = None
-        self.node_parser = None
+        if service_context is not None and isinstance(
+            service_context, ServiceContext
+        ):
+            self._service_context = service_context
+        else:
+            # Embeddings の設定
+            self._embed_model = embed_model or HuggingFaceEmbeddings(
+                model_name=embed_model_name
+            )
+            self._service_context = ServiceContext.from_defaults(
+                llm=llm_model,
+                embed_model=self._embed_model,
+                callback_manager=self.callback_manager,
+            )
 
     def _create_strage_context(self) -> None:
         """Storage Contextを作成する関数"""
@@ -90,7 +95,7 @@ class Pipeline:
         required_exts: List[str] = [".pdf", ".txt"],
         recursive: bool = True,
     ) -> List[str]:
-        """ドキュメントを読み込む関数
+        """SimpleDirectoryReaderを使用してドキュメントを読み込む関数
 
         Args:
             docs_dir_path (str): ドキュメントのディレクトリのパス

@@ -7,7 +7,7 @@ from langchain.prompts import PromptTemplate
 from langchain.text_splitter import TokenTextSplitter
 
 
-class summarize_translator:
+class langchain_summarizer:
     def __init__(
         self, llm_model: Any | None = None, max_tokens: int = 8
     ) -> None:

@@ -8,7 +8,7 @@ from slack_sdk.errors import SlackApiError
 from src.arXivUtils import download_pdf
 from src.SaveToNotion import save_to_notion_page
 from src.Utils import write_markdown
-from src.XMLUtils import extract_sections, parse_xml_file, run_grobid
+from src.XMLUtils import DocumentReader, run_grobid
 
 # ボットトークンとソケットモードハンドラーを使ってアプリを初期化します
 app = App(token=os.environ["SLACK_BOT_TOKEN"])
@@ -47,7 +47,9 @@ def get_entry_id_from_thread_text(thread_text: str) -> str:
     Returns:
         entry_id (str): エントリーID
     """
-    entry_id = thread_text.split("\n")[3]
+    entry_id = thread_text.split("\n")[4]
+    if entry_id[0] == "<":
+        entry_id = entry_id[1:]
     if entry_id[-1] == ">":
         entry_id = entry_id[:-1]
     return entry_id
@@ -64,11 +66,17 @@ def get_summary_markdown_text(dir_path: str, pdf_name: str) -> str:
     Returns:
         markdown_text (str): 要約したマークダウンテキスト
     """
+    if os.path.exists(dir_path) and os.path.isdir(dir_path):
+        # dir_path is a valid directory path
+        pass
+    else:
+        # dir_path is not a valid directory path
+        pass
     run_grobid(dir_path, pdf_name)
     xml_path = dir_path + "/" + pdf_name + ".tei.xml"
-    root = parse_xml_file(xml_path)
-    sections = extract_sections(root=root)
-    markdown_text = write_markdown(sections=sections, pdf_name=pdf_name)
+    reader = DocumentReader()
+    docs = reader.load_data(xml_path=xml_path)
+    markdown_text = write_markdown(sections=docs)
 
     # デバッグ用にテキストを保存する
     with open(f"{dir_path}/tmp_markdown.md", mode="w") as f:
