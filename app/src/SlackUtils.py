@@ -1,14 +1,14 @@
 import os
-from typing import List
+from typing import Any, Dict, List
 
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk.errors import SlackApiError
 
-from src.arXivUtils import download_pdf
-from src.SaveToNotion import save_to_notion_page
+from src.arXivUtils import create_paper_info, download_pdf, get_paper_by_id
+from src.SaveToNotion import write_markdown_to_notion
 from src.Utils import write_markdown
-from src.XMLUtils import DocumentReader, run_grobid
+from src.XMLUtils import DocumentCreator, run_grobid
 
 # ボットトークンとソケットモードハンドラーを使ってアプリを初期化します
 app = App(token=os.environ["SLACK_BOT_TOKEN"])
@@ -55,16 +55,19 @@ def get_entry_id_from_thread_text(thread_text: str) -> str:
     return entry_id
 
 
-def get_summary_markdown_text(dir_path: str, pdf_name: str) -> str:
+def get_summary_markdown_text(
+    dir_path: str, pdf_name: str, pdf_info: Dict[str, str]
+) -> Dict[str, Any]:
     """
     PDFファイルから要約したマークダウンテキストを生成する関数
 
     Args:
         dir_path (str): PDFファイルのディレクトリパス
         pdf_name (str): PDFファイル名
+        pdf_info (Any): 論文情報
 
     Returns:
-        markdown_text (str): 要約したマークダウンテキスト
+        markdown_text (Dict[str: Any]): 要約したマークダウンテキストと論文情報を含んだ辞書。
     """
     if os.path.exists(dir_path) and os.path.isdir(dir_path):
         # dir_path is a valid directory path
@@ -72,17 +75,21 @@ def get_summary_markdown_text(dir_path: str, pdf_name: str) -> str:
     else:
         # dir_path is not a valid directory path
         pass
-    run_grobid(dir_path, pdf_name)
-    xml_path = dir_path + "/" + pdf_name + ".tei.xml"
-    reader = DocumentReader()
-    docs = reader.load_data(xml_path=xml_path)
-    markdown_text = write_markdown(sections=docs)
+    run_grobid(dir_path)
+    xml_path = dir_path + pdf_name + ".tei.xml"
+    creator = DocumentCreator()
+    creator.load_xml(xml_path)
+    # pdf_info = reader.pdf_info
+    creator.input_pdf_info(pdf_info)
+    docs = creator.create_docs()
+    doc_info = creator.get_doc_info()
+    markdown_text = write_markdown(documents=docs)
 
     # デバッグ用にテキストを保存する
     with open(f"{dir_path}/tmp_markdown.md", mode="w") as f:
         f.write(markdown_text)
 
-    return markdown_text
+    return {"markdown_text": markdown_text, "doc_info": doc_info}
 
 
 def process_ping_request(user: str, thread_ts: str, say) -> None:
@@ -117,15 +124,19 @@ def process_pdf_request(
 
     thread_text = thread_message["text"]
     entry_id = get_entry_id_from_thread_text(thread_text)
-    dir_path, _, pdf_name = download_pdf(entry_id, document_dir_path)
+    paper = get_paper_by_id(entry_id)
+    dir_path, _, pdf_name = download_pdf(paper, document_dir_path)
+    pdf_info = create_paper_info(paper)
 
     # 要約したマークダウンテキストを生成する
-    markdown_text = get_summary_markdown_text(
-        dir_path=dir_path, pdf_name=pdf_name
+    summary = get_summary_markdown_text(
+        dir_path=dir_path, pdf_name=pdf_name, pdf_info=pdf_info
     )
+    markdown_text = summary["markdown_text"]
+    doc_info = summary["doc_info"]
 
     # Notionにページを作成し、要約を書き込む
-    save_to_notion_page(markdown_text=markdown_text, entry_id=entry_id)
+    write_markdown_to_notion(markdown_text=markdown_text, doc_info=doc_info)
 
     # Slackに要約を書き込む
     say(

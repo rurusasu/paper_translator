@@ -5,9 +5,12 @@ from urllib.error import HTTPError
 
 import arxiv
 
+from src.Informations import arXivInfoDict
+
 # 興味があるカテゴリー群
 CATEGORIES = [
     "cs.AI",
+    "cs.CV",
     ...,
 ]
 
@@ -32,7 +35,8 @@ def _generate_query(keyword: str, n_days: int) -> str:
     )
 
     try:
-        today = dt.datetime.today() - dt.timedelta(days=n_days)
+        # today = dt.datetime.today() - dt.timedelta(days=n_days)
+        today = dt.datetime.today()
         base_date = today - dt.timedelta(days=n_days)
         query = QUERY_TEMPLATE.format(
             keyword,
@@ -72,6 +76,45 @@ def _search_arxiv(query: str, max_result: int) -> arxiv.Search:
         return None
 
 
+def create_paper_info(paper: arxiv.Result) -> Dict[str, str]:
+    """
+    arXiv APIの検索結果から，論文情報の辞書を作成する関数
+
+    Args:
+        paper (arxiv.Result): 検索結果
+
+    Returns:
+        result (Dict[str, str]): 論文情報の辞書
+    """
+    # result = arXivInformation()
+    try:
+        """
+        result = {
+            "Title": paper.title,
+            "Entry_id": paper.entry_id,
+            "Authors": paper.authors,
+            "Summary": paper.summary,
+            "Pdf_url": paper.pdf_url,
+            "Published": paper.published,
+            "Updated": paper.updated,
+        }
+        """
+        result = arXivInfoDict.copy()
+        result["Title"] = paper.title
+        result["Entry_id"] = paper.entry_id
+        result["Authors"] = paper.authors
+        result["Summary"] = paper.summary
+        result["Pdf_url"] = paper.pdf_url
+        result["Published"] = paper.published
+        result["Updated"] = paper.updated
+    except Exception as e:
+        # エラーが発生した場合は、空の辞書を返す
+        print(f"Error in create_paper_info: {e}")
+        return dict()
+    else:
+        return result
+
+
 def _create_paper_list(
     search: arxiv.Search, categories: List[str] = CATEGORIES
 ) -> List[Dict[str, str]]:
@@ -83,7 +126,7 @@ def _create_paper_list(
         categories (list): カテゴリーのリスト
 
     Returns:
-        result_list (List[Dict[str, str]]): 論文情報の辞書のリスト
+        result_list (List[Dict[str, str]]): 論文情報のリスト
     """
     try:
         result_list = []
@@ -91,27 +134,19 @@ def _create_paper_list(
             if len((set(paper.categories) & set(categories))) == 0:
                 continue
             else:
-                result_list.append(
-                    {
-                        "title": paper.title,
-                        "entry_id": paper.entry_id,
-                        "authors": paper.authors,
-                        "summary": paper.summary,
-                        "pdf_url": paper.pdf_url,
-                        "published": paper.published,
-                        "updated": paper.updated,
-                    }
-                )
-        return result_list
+                paper_info = create_paper_info(paper)
+                result_list.append(paper_info)
     except Exception as e:
         # エラーが発生した場合は、空のリストを返す
         print(f"Error in create_paper_list: {e}")
         return []
+    else:
+        return result_list
 
 
 def _get_paper_info_from_arxiv(
     query: str, max_result: int, categories: List[str] = CATEGORIES
-) -> List[arxiv.Result]:
+) -> List[Dict[str, str]]:
     """
     arXiv APIを使って，論文情報を取得する関数
 
@@ -121,7 +156,7 @@ def _get_paper_info_from_arxiv(
         categories (list): カテゴリーのリスト
 
     Returns:
-        result_list (list): 論文情報のリスト
+        result_list (List[Dict[str, str]]): 論文情報のリスト
     """
     # arXiv APIを使って，論文情報を検索
     search = _search_arxiv(query, max_result)
@@ -138,8 +173,8 @@ def get_paper_info(
     keyword: str,
     categories: List[str] = CATEGORIES,
     n_days: int = 7,
-    max_result: int = 10,
-) -> List[arxiv.Result]:
+    max_result: int = 20,
+) -> List[Dict[str, str]]:
     """
     arXiv APIを使って，論文情報を取得する関数
 
@@ -150,7 +185,7 @@ def get_paper_info(
         max_result (int): 取得する論文数の上限
 
     Returns:
-        result_list (list): 論文情報のリスト
+        result_list (List[Dict[str, str]]): 論文情報のリスト
     """
     # 検索クエリを生成
     query = _generate_query(keyword, n_days)
@@ -161,7 +196,7 @@ def get_paper_info(
     return result_list
 
 
-def get_paper_info_by_id(entry_id: str) -> arxiv.Result:
+def get_paper_by_id(entry_id: str) -> arxiv.Result:
     """
     arXiv APIを使って，論文情報を取得する関数
 
@@ -186,13 +221,13 @@ def get_paper_info_by_id(entry_id: str) -> arxiv.Result:
 
 
 def download_pdf(
-    entry_id: str, document_root_dir_path: str
+    paper: arxiv.Result, document_root_dir_path: str
 ) -> Tuple[str, str, str]:
     """
     arXiv APIを使って，論文のPDFを取得する関数
 
     Args:
-        entry_id (str): 論文のID
+        paper (arxiv.Result): 論文情報
         document_root_dir_path (str): PDFを保存する親ディレクトリのパス
 
     Returns:
@@ -201,8 +236,6 @@ def download_pdf(
         pdf_name (str): PDFのファイル名
     """
     try:
-        paper = get_paper_info_by_id(entry_id)
-
         dir_name = (
             paper.title.replace(" ", "_").replace(":", "").replace(",", "")
         )
@@ -218,7 +251,6 @@ def download_pdf(
                 pdf_path = paper.download_pdf(
                     dirpath=dir_path, filename=pdf_name + ".pdf"
                 )
-                break
             except HTTPError as e:
                 print(e)
                 cnt += 1
@@ -226,6 +258,7 @@ def download_pdf(
                     raise e
             else:
                 print("Downloaded!")
+                break
 
     except Exception as e:
         # エラーが発生した場合は、Noneを返す
@@ -236,16 +269,18 @@ def download_pdf(
 
 
 if __name__ == "__main__":
-    keyword = "GAN"  # 検索キーワード
+    keyword = "model"  # 検索キーワード
     CATEGORIES = [
         "cs.AI",
+        "cs.CV",
         ...,
     ]
     result_list = get_paper_info(
         keyword, categories=CATEGORIES, n_days=14, max_result=10
     )
-    print(f"# Title: \n{result_list[0]['title']}")
-    print(f"# Summary: \n{result_list[0]['summary']}")
-    print(f"# entry_id: \n{result_list[0]['entry_id']}")
-    print(f"# pdf_url: \n{result_list[0]['pdf_url']}")
-    download_pdf(result_list[0]["entry_id"])
+    if len(result_list) != 0:
+        print(f"# Title: \n{result_list[0]['Title']}")
+        print(f"# Summary: \n{result_list[0]['Summary']}")
+        print(f"# entry_id: \n{result_list[0]['Entry_id']}")
+        print(f"# pdf_url: \n{result_list[0]['Pdf_url']}")
+        print(f"# published: \n{result_list[0]['Published']}")

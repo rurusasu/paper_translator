@@ -1,11 +1,13 @@
 import os
 import subprocess
 import xml.etree.ElementTree as ET
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 from xml.etree.ElementTree import Element
 
 import bs4
 from llama_index import Document
+
+from src.Informations import DocsInfoDict
 
 GROBID_PATH = "/usr/lib/grobid-0.7.3"
 
@@ -41,56 +43,73 @@ def extract_author_names(author: Element) -> str:
     return author_name
 
 
-def extract_author_names_from_authors(authors: bs4.ResultSet) -> List[str]:
+def extract_author_names_from_authors(
+    authors: bs4.ResultSet, is_list: bool = False
+) -> str | List[str]:
     """著者名を抽出する関数
 
     Args:
         authors (ResultSet): 著者情報を含むResultSetオブジェクト
 
     Returns:
-        authors_list (List[str]): 著者名のリスト
+        authors (str | List[str]): 著者名を連結した文字列もしくはリスト
     """
-    authors_list = []
+    if is_list:
+        authors = []
+    else:
+        authors = ""
     try:
         for author in authors:
             author_name = extract_author_names(author)
             if author_name:
-                authors_list.append(author_name)
+                if is_list:
+                    authors.append(author_name)
+                else:
+                    authors += f"{author_name}, "
     except (AttributeError, TypeError) as e:
         print(f"Error in extract_author_names_from_authors: {e}")
-    return authors_list
+    return authors
 
 
-def extract_pdf_info(teiheader: bs4.ResultSet) -> Dict[str, str]:
+def extract_doc_info(teiheader: bs4.ResultSet) -> Dict[str, str]:
     """PDFファイルの情報を抽出する関数
 
     Args:
         teiheader (ResultSet): TEIヘッダー情報を含むResultSetオブジェクト
     Returns:
-        pdf_info (Dict[str, str]): PDFファイルの情報を格納した辞書
+        doc_info (Dict[str, str]): PDFファイルの情報を格納した辞書
     """
-    pdf_info = {}
     try:
         sourceDesc = teiheader.find("sourcedesc").find("biblstruct")
         pdf_title = sourceDesc.find("analytic").find("title").text
         pdf_summary = teiheader.find("profiledesc").find("abstract").text
         authors = sourceDesc.find("analytic").find_all("author")
-        authors_list = extract_author_names_from_authors(authors)
+        authors = extract_author_names_from_authors(authors)
         published = sourceDesc.find("monogr").find("imprint").find("date").text
         pdf_idno = sourceDesc.find("idno").text
         pdf_lang = teiheader.get("xml:lang")
 
-        pdf_info = {
+        """
+        doc_info = {
             "Title": pdf_title,
             "All_Document_Summary": pdf_summary,
             "Idno": pdf_idno,
             "Language": pdf_lang,
             "Published": published,
-            "Authors": authors_list,
+            "Authors": authors,
         }
+        """
+        doc_info = DocsInfoDict.copy()
+        doc_info["Title"] = pdf_title
+        doc_info["All_Document_Summary"] = pdf_summary
+        doc_info["Idno"] = pdf_idno
+        doc_info["Language"] = pdf_lang
+        doc_info["Published"] = published
+        doc_info["Authors"] = authors
     except (AttributeError, TypeError) as e:
-        print(f"Error in extract_pdf_info: {e}")
-    return pdf_info
+        raise (f"Error in extract_doc_info: {e}")
+    else:
+        return doc_info
 
 
 def run_grobid(dir_path: str) -> None:
@@ -113,13 +132,13 @@ def run_grobid(dir_path: str) -> None:
         print(f"Error in run_grobid: {e}")
 
 
-def parse_xml_file(xml_path: str) -> Any:
+def _parse_xml_file(xml_path: str) -> Any:
     """XMLファイルをパースする関数
 
     Args:
         xml_path (str): XMLファイルのパス
     Returns:
-        Dict["soup": BeautifulSoup, "root": Element] | None: BeautifulSoupオブジェクト
+        Dict["bs4": BeautifulSoup, "root": Element] | None: BeautifulSoupオブジェクト
     """
     try:
         if not os.path.exists(xml_path):
@@ -127,7 +146,7 @@ def parse_xml_file(xml_path: str) -> Any:
         soup = bs4.BeautifulSoup(open(xml_path), "lxml")
         tree = ET.parse(xml_path)
         root = tree.getroot()
-        return {"soup": soup, "root": root}
+        return {"bs4": soup, "root": root}
     except FileNotFoundError as e:
         print(f"Error in parse_xml_file: {e}")
     except Exception as e:
@@ -138,7 +157,7 @@ def parse_xml_file(xml_path: str) -> Any:
 def extract_documents(
     div_list: bs4.ResultSet,
     root: Element,
-    pdf_info: Dict[str, str],
+    doc_info: Dict[str, str],
     doc_id_type: Literal[
         "Section_No.", "Section_Title", "Serial_Number"
     ] = "Serial_Number",
@@ -148,7 +167,7 @@ def extract_documents(
     Args:
         div_list (ResultSet): セクション情報を含むResultSetオブジェクト
         root (Element): XMLのルート要素
-        pdf_info (Dict[str, str]): PDFファイルの情報を格納した辞書
+        doc_info (Dict[str, str]): PDFファイルの情報を格納した辞書
         doc_id_type (Literal["Section_No.", "Section_Title", "Serial_Number"], optional): ドキュメントIDの種類. Defaults to "Serial_Number".
 
     Returns:
@@ -181,8 +200,9 @@ def extract_documents(
                         meta_data["Section Title"] = element.text
 
                         # PDFファイルの情報をメタデータに追加する
-                        for k, v in pdf_info.items():
-                            meta_data[k] = v
+                        for k, v in doc_info.items():
+                            if v != "":
+                                meta_data[k] = v
 
                         if doc_id_type == "Section_No.":
                             doc_id = f"Section No.{element.attrib['n']}"
@@ -214,17 +234,51 @@ def extract_documents(
         return documents
 
 
-class DocumentReader:
+class DocumentCreator:
     def __init__(self):
-        pass
+        self.root = None
+        self.doc_info = {}
+        self.pdf_info = {}
+        self.documents = []
+        self.div_list = None
 
-    def load_data(
+    def load_xml(
         self,
         xml_path: str,
+    ) -> None:
+        # XMLファイルをパースする
+        parsed_data = _parse_xml_file(xml_path)
+        if parsed_data is None:
+            raise ValueError("Failed to parse XML file")
+        soup, self.root = parsed_data["bs4"], parsed_data["root"]
+
+        # PDFファイルの情報を取得する
+        teiheader = soup.find("tei").find("teiheader")
+        self.doc_info = extract_doc_info(teiheader)
+
+        # セクションを抽出し、Documentオブジェクトのリストを作成する
+        self.div_list = soup.find("text").find_all("div")
+
+        return None
+
+    def input_pdf_info(self, pdf_info: Dict[str, str]) -> None:
+        self.pdf_info.update(pdf_info)
+
+    def _marge_info(self) -> None:
+        if self.pdf_info:
+            self.doc_info["Entry_id"] = self.pdf_info["Entry_id"]
+            self.doc_info["Pdf_url"] = self.pdf_info["Pdf_url"]
+            self.doc_info["Updated"] = self.pdf_info["Updated"]
+            self.doc_info["Categories"] = self.pdf_info["Categories"]
+            self.doc_info["Comment"] = self.pdf_info["Comment"]
+        return None
+
+    def create_docs(
+        self,
         doc_id_type: Literal[
             "Section_No.", "Section_Title", "Serial_Number"
         ] = "Serial_Number",
-    ) -> List[Document]:
+    ) -> Optional[List[Document]]:
         """XMLファイルからDocumentオブジェクトのリストを作成するメソッド
 
         Args:
@@ -232,9 +286,14 @@ class DocumentReader:
             doc_id_type (Literal["Section_No.", "Section_Title", "Serial_Number"], optional): ドキュメントIDの種類. Defaults to "Serial_Number".
 
         Returns:
-            documents (List[Document]): Documentオブジェクトのリスト
+            Optional[List[Document]]: Documentオブジェクトのリスト
         """
         try:
+            if (self.root is None) or (self.doc_info is None):
+                raise ValueError(
+                    "Error in DocumentReader.load_data: Invalid data"
+                )
+
             # ドキュメントIDの種類が正しいかチェックする
             if doc_id_type not in [
                 "Section_No.",
@@ -243,29 +302,29 @@ class DocumentReader:
             ]:
                 raise ValueError("Invalid doc_id")
 
-            # XMLファイルをパースする
-            parsed_data = parse_xml_file(xml_path)
-            if parsed_data is None:
-                raise ValueError("Failed to parse XML file")
-            soup, root = parsed_data["soup"], parsed_data["root"]
+            if self.pdf_info:
+                self._marge_info()
 
-            # PDFファイルの情報を取得する
-            teiheader = soup.find("tei").find("teiheader")
-            pdf_info = extract_pdf_info(teiheader)
-
-            # セクションを抽出し、Documentオブジェクトのリストを作成する
-            div_list = soup.find("text").find_all("div")
             documents = extract_documents(
-                div_list=div_list,
-                root=root,
-                pdf_info=pdf_info,
+                div_list=self.div_list,
+                root=self.root,
+                doc_info=self.doc_info,
                 doc_id_type=doc_id_type,
             )
         except (ValueError, Exception) as e:
             print(f"Error in DocumentReader.load_data: {e}")
             return None
         else:
-            return documents
+            self.documents = documents
+            return self.documents
+
+    def get_doc_info(self) -> Dict[str, str]:
+        """PDFファイルの情報を取得するメソッド
+
+        Returns:
+            Dict[str, str]: PDFファイルの情報
+        """
+        return self.doc_info
 
 
 if __name__ == "__main__":
@@ -289,5 +348,6 @@ if __name__ == "__main__":
     # 自作の DirectoryReader を使用して、
     # ディレクトリ内の xml ファイルをDocumentオブジェクトとして読み込む
     # run_grobid(dir_path, pdf_name)
-    documents_2 = DocumentReader().load_data(xml_path)
+    creator = DocumentCreator().load_xml(xml_path)
+    documents_2 = creator.create_docs()
     print(f"documents_2 metadata: \n{documents_2[0].metadata['Section Title']}")

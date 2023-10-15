@@ -1,7 +1,5 @@
 import time
-from typing import List
-
-import arxiv
+from typing import Dict, List
 
 from src.OpenAIUtils import get_message
 from src.SlackUtils import write_message
@@ -10,7 +8,7 @@ SLACK_CHANNENL = "勉強"
 
 
 def write_summary(
-    channel_id: str, keyword: str, result_list: List[arxiv.Result]
+    channel_id: str, keyword: str, result_list: List[Dict[str, str]]
 ) -> None:
     """
     スレッドに要約を書き込む関数
@@ -18,7 +16,7 @@ def write_summary(
     Args:
         channel_id (str): チャンネルID
         keyword (str): 検索キーワード
-        result_list (List[arxiv.Result]): 論文のリスト
+        result_list (List[Dict[str:str]]): 論文情報のリスト
     """
     # Slackへのメッセージの送信に成功したかどうかを表すフラグ
     write_message_flag = False
@@ -44,7 +42,8 @@ def write_summary(
     # 論文情報をSlackに送信する
     for i, paper in enumerate(result_list, start=1):
         try:
-            text = f"title: {paper['title']}\nbody: {paper['summary']}"
+            text = f"title: {paper['Title']}\nbody: {paper['Summary']}"
+            # text = f"title: {paper.Title}\nbody: {paper.Summary}"
 
             # ChatGPTに論文の概要を要約してもらう
             response = get_message(text)
@@ -55,9 +54,12 @@ def write_summary(
                 f"{'=' *40}\n"
                 f"{keyword}: {i}本目\n"
                 f"{'=' *40}\n"
-                f"発行日: {paper['published']}\n"
-                f"{paper['entry_id']}\n"
-                f"{title_ja} ({paper['title']})\n"
+                f"発行日: {paper['Published']}\n"
+                # f"発行日: {paper.Published}\n"
+                f"{paper['Entry_id']}\n"
+                # f"{paper.Entry_id}\n"
+                f"{title_ja} ({paper['Title']})\n"
+                # f"{title_ja} ({paper.Title})\n"
                 f"{body}\n"
                 f"{'=' *40}"
             )
@@ -82,10 +84,7 @@ if __name__ == "__main__":
     from src.arXivUtils import get_paper_info
     from src.SlackUtils import app
 
-    keyword_list = [
-        "LLM",
-        "diffusion",
-    ]
+    keyword_list = ["AI", "LLM", "Model", "CNN"]
 
     for keyword in keyword_list:
         result_list = get_paper_info(keyword)
