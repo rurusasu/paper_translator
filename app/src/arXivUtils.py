@@ -121,7 +121,7 @@ def _create_paper_list(
             if len((set(paper.categories) & set(categories))) == 0:
                 continue
             else:
-                paper_info = _create_paper_info(paper)
+                paper_info = create_paper_info(paper)
                 result_list.append(paper_info)
     except Exception as e:
         # エラーが発生した場合は、空のリストを返す
