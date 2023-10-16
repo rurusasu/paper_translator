@@ -78,37 +78,103 @@ def check_connect_notion() -> None:
         return None
 
 
-def set_page_properties(doc_info: Dict[str, str]) -> None:
-    """Notionのページにプロパティを設定する関数
+def set_title_property(doc_info: Dict[str, str]) -> None:
+    """Notionページのタイトルプロパティを設定する関数
 
     Args:
-        paper (arxiv.Result): 論文情報
+        doc_info (Dict[str, str]): ページの情報
     """
-
     PROPERTIES["Title"]["title"][0]["text"]["content"] = doc_info["Title"]
+
+
+def set_url_property(doc_info: Dict[str, str]) -> None:
+    """NotionページのURLプロパティを設定する関数
+
+    Args:
+        doc_info (Dict[str, str]): ページの情報
+    """
     PROPERTIES["URL"]["url"] = doc_info["Entry_id"]
+
+
+def set_type_property() -> None:
+    """NotionページのTypeプロパティを設定する関数"""
     PROPERTIES["Type"]["select"]["name"] = "paper"
+
+
+def set_author_property(doc_info: Dict[str, str]) -> None:
+    """NotionページのAuthorプロパティを設定する関数
+
+    Args:
+        doc_info (Dict[str, str]): ページの情報
+    """
     PROPERTIES["Author"]["rich_text"][0]["text"]["content"] = doc_info[
         "Authors"
     ]
+
+
+def set_conference_property() -> None:
+    """NotionページのConferenceプロパティを設定する関数"""
     PROPERTIES["Conference"]["select"]["name"] = "arXiv"
+
+
+def set_published_property(doc_info: Dict[str, str]) -> None:
+    """NotionページのPublishedプロパティを設定する関数
+
+    Args:
+        doc_info (Dict[str, str]): ページの情報
+    """
+    if doc_info["Published"] is None:
+        return
     PROPERTIES["Published"]["date"]["start"] = datetime.strptime(
         doc_info["Published"], "%d %b %Y"
     ).strftime("%Y-%m-%d")
 
-    return None
+
+def set_page_properties(doc_info: Dict[str, str]) -> None:
+    """Notionページのプロパティを設定する関数
+
+    Args:
+        doc_info (Dict[str, str]): ページの情報
+    """
+    set_title_property(doc_info)
+    set_url_property(doc_info)
+    set_type_property()
+    set_author_property(doc_info)
+    set_conference_property()
+    set_published_property(doc_info)
 
 
-def write_markdown_to_notion(
+def create_notion_page(payload: Dict) -> None:
+    """Notionページを作成する関数
+
+    Args:
+        payload (Dict): ページの情報
+    """
+    try:
+        notion_client.pages.create(
+            **{
+                "parent": {"database_id": os.getenv("NOTION_DATABASE_ID")},
+                "icon": {
+                    "type": "emoji",
+                    "emoji": "📄",
+                },
+                "properties": PROPERTIES,
+                **payload,
+            }
+        )
+    except errors.APIResponseError as e:
+        print(f"Error writing message: {e}")
+
+
+def set_page_properties_and_create_notion_page(
     markdown_text: str, doc_info: Dict[str, str]
 ) -> None:
-    """NotionのページにMarkdownを書き込む関数
+    """Notionページのプロパティを設定し、ページを作成する関数
 
     Args:
         markdown_text (str): Markdownのテキスト
-        entry_id (str): 論文のID
+        doc_info (Dict[str, str]): ページの情報
     """
-
     set_page_properties(doc_info)
     payload = {"children": []}
     for sentence in markdown_text.split("\n"):
@@ -161,20 +227,21 @@ def write_markdown_to_notion(
                 }
             )
 
-    try:
-        response = notion_client.pages.create(
-            **{
-                "parent": {"database_id": os.getenv("NOTION_DATABASE_ID")},
-                "icon": {
-                    "type": "emoji",
-                    "emoji": "📄",
-                },
-                "properties": PROPERTIES,
-                **payload,
-            }
-        )
-    except errors.APIResponseError as e:
-        print(f"Error writing message: {e}")
+    create_notion_page(payload)
+
+
+def write_markdown_to_notion(
+    markdown_text: str, doc_info: Dict[str, str]
+) -> None:
+    """NotionページにMarkdownを書き込む関数
+
+    Args:
+        markdown_text (str): Markdownのテキスト
+        doc_info (Dict[str, str]): ページの情報
+    """
+    if not isinstance(markdown_text, str) or not isinstance(doc_info, dict):
+        raise TypeError("Invalid input type")
+    set_page_properties_and_create_notion_page(markdown_text, doc_info)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ from src.Informations import arXivInfoDict
 CATEGORIES = [
     "cs.AI",
     "cs.CV",
-    ...,
+    # ...
 ]
 
 # pdfの保存先
@@ -35,7 +35,6 @@ def _generate_query(keyword: str, n_days: int) -> str:
     )
 
     try:
-        # today = dt.datetime.today() - dt.timedelta(days=n_days)
         today = dt.datetime.today()
         base_date = today - dt.timedelta(days=n_days)
         query = QUERY_TEMPLATE.format(
@@ -86,19 +85,7 @@ def create_paper_info(paper: arxiv.Result) -> Dict[str, str]:
     Returns:
         result (Dict[str, str]): 論文情報の辞書
     """
-    # result = arXivInformation()
     try:
-        """
-        result = {
-            "Title": paper.title,
-            "Entry_id": paper.entry_id,
-            "Authors": paper.authors,
-            "Summary": paper.summary,
-            "Pdf_url": paper.pdf_url,
-            "Published": paper.published,
-            "Updated": paper.updated,
-        }
-        """
         result = arXivInfoDict.copy()
         result["Title"] = paper.title
         result["Entry_id"] = paper.entry_id
@@ -134,7 +121,7 @@ def _create_paper_list(
             if len((set(paper.categories) & set(categories))) == 0:
                 continue
             else:
-                paper_info = create_paper_info(paper)
+                paper_info = _create_paper_info(paper)
                 result_list.append(paper_info)
     except Exception as e:
         # エラーが発生した場合は、空のリストを返す
@@ -158,6 +145,9 @@ def _get_paper_info_from_arxiv(
     Returns:
         result_list (List[Dict[str, str]]): 論文情報のリスト
     """
+    # 検索クエリを生成
+    query = _generate_query(query, n_days=7)
+
     # arXiv APIを使って，論文情報を検索
     search = _search_arxiv(query, max_result)
     if search is None:
@@ -187,13 +177,32 @@ def get_paper_info(
     Returns:
         result_list (List[Dict[str, str]]): 論文情報のリスト
     """
-    # 検索クエリを生成
-    query = _generate_query(keyword, n_days)
+    try:
+        # 引数の例外処理
+        if not isinstance(keyword, str):
+            raise TypeError("keyword must be str")
+        if not isinstance(categories, list):
+            raise TypeError("categories must be list")
+        if not isinstance(n_days, int):
+            raise TypeError("n_days must be int")
+        if not isinstance(max_result, int):
+            raise TypeError("max_result must be int")
 
-    # arXiv APIを使って，論文情報を取得
-    result_list = _get_paper_info_from_arxiv(query, max_result, categories)
+        # 検索キーワードが空の場合は、空のリストを返す
+        if not keyword:
+            return []
 
-    return result_list
+        # arXiv APIを使って，論文情報を取得
+        result_list = _get_paper_info_from_arxiv(
+            keyword, max_result, categories
+        )
+
+        return result_list
+
+    except Exception as e:
+        # エラーが発生した場合は、空のリストを返す
+        print(f"Error in get_paper_info: {e}")
+        return []
 
 
 def get_paper_by_id(entry_id: str) -> arxiv.Result:
@@ -206,11 +215,15 @@ def get_paper_by_id(entry_id: str) -> arxiv.Result:
     Returns:
         paper (arxiv.Result): 論文情報
     """
-    entry_id = entry_id.split("/")[-1]
-    if entry_id[-1] == ">":
-        entry_id = entry_id[:-1]
-
     try:
+        # 引数の例外処理
+        if not isinstance(entry_id, str):
+            raise TypeError("entry_id must be str")
+
+        entry_id = entry_id.split("/")[-1]
+        if entry_id[-1] == ">":
+            entry_id = entry_id[:-1]
+
         paper = next(arxiv.Search(id_list=[entry_id]).results())
     except Exception as e:
         # エラーが発生した場合は、Noneを返す
@@ -236,6 +249,12 @@ def download_pdf(
         pdf_name (str): PDFのファイル名
     """
     try:
+        # 引数の例外処理
+        if not isinstance(paper, arxiv.Result):
+            raise TypeError("paper must be arxiv.Result")
+        if not isinstance(document_root_dir_path, str):
+            raise TypeError("document_root_dir_path must be str")
+
         dir_name = (
             paper.title.replace(" ", "_").replace(":", "").replace(",", "")
         )
@@ -273,7 +292,7 @@ if __name__ == "__main__":
     CATEGORIES = [
         "cs.AI",
         "cs.CV",
-        ...,
+        # ...
     ]
     result_list = get_paper_info(
         keyword, categories=CATEGORIES, n_days=14, max_result=10
