@@ -1,5 +1,3 @@
-from typing import List
-
 import torch
 from llama_index.llms import HuggingFaceLLM
 from transformers import AutoTokenizer, pipeline

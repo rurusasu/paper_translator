@@ -83,6 +83,10 @@ def get_summary_markdown_text(
     creator.input_pdf_info(pdf_info)
     docs = creator.create_docs()
     doc_info = creator.get_doc_info()
+    if len(docs) == 0:
+        # 何らかのエラーが発生した場合は、エラーメッセージを表示してNoneを返す
+        print("Error creating docs.")
+        return {}
     markdown_text = write_markdown(documents=docs)
 
     # デバッグ用にテキストを保存する

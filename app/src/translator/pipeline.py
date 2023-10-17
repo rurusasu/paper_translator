@@ -2,7 +2,6 @@ from typing import Any, List, Optional
 
 from langchain.embeddings import HuggingFaceEmbeddings
 from llama_index import (
-    Document,
     ServiceContext,
     SimpleDirectoryReader,
     StorageContext,
