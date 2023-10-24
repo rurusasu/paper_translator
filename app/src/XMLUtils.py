@@ -12,6 +12,35 @@ from src.Informations import DocsInfoDict
 GROBID_PATH = "/usr/lib/grobid-0.7.3"
 
 
+def _extract_author_names_from_authors(
+    authors: bs4.ResultSet, return_list: bool = False
+) -> str | List[str]:
+    """著者名を抽出する関数
+
+    Args:
+        authors (ResultSet): 著者情報を含むResultSetオブジェクト
+        return_list (bool, optional): リスト形式で返すかどうか. Defaults to False.
+
+    Returns:
+        authors (str | List[str]): 著者名を連結した文字列もしくはリスト
+    """
+    try:
+        author_names = [_extract_author_names(author) for author in authors]
+        valid_author_names = [
+            _ for _ in author_names if _is_valid_author_name(_)
+        ]
+        if return_list:
+            return valid_author_names
+        else:
+            return ", ".join(valid_author_names)
+    except (AttributeError, TypeError) as e:
+        print(f"Error in extract_author_names_from_authors: {e}")
+        if return_list:
+            return []
+        else:
+            return ""
+
+
 def _extract_author_names(author: Element) -> str:
     """著者名を抽出する関数
 
@@ -22,18 +51,18 @@ def _extract_author_names(author: Element) -> str:
         author_name (str): 著者名
     """
     try:
-        if len(author.find("persname")) == 2:
-            first_name = author.find("persname").find("forename").text
-            last_name = author.find("persname").find("surname").text
+        if len(author.find("persName")) == 2:
+            first_name = author.find("persName").find("forename").text
+            last_name = author.find("persName").find("surname").text
             author_name = f"{first_name} {last_name}"
-        elif len(author.find("persname")) == 3:
-            first_name = author.find("persname").find("forename").text
+        elif len(author.find("persName")) == 3:
+            first_name = author.find("persName").find("forename").text
             middle_name = (
-                author.find("persname")
+                author.find("persName")
                 .find("forename", {"type": "middle"})
                 .text
             )
-            last_name = author.find("persname").find("surname").text
+            last_name = author.find("persName").find("surname").text
             author_name = f"{first_name} {middle_name} {last_name}"
         else:
             author_name = ""
@@ -43,32 +72,16 @@ def _extract_author_names(author: Element) -> str:
     return author_name
 
 
-def _extract_author_names_from_authors(
-    authors: bs4.ResultSet, is_list: bool = False
-) -> str | List[str]:
-    """著者名を抽出する関数
+def _is_valid_author_name(author_name: str) -> bool:
+    """著者名が有効かどうかを判定する関数
 
     Args:
-        authors (ResultSet): 著者情報を含むResultSetオブジェクト
+        author_name (str): 著者名
 
     Returns:
-        authors (str | List[str]): 著者名を連結した文字列もしくはリスト
+        bool: Trueなら有効、Falseなら無効
     """
-    if is_list:
-        authors = []
-    else:
-        authors = ""
-    try:
-        for author in authors:
-            author_name = _extract_author_names(author)
-            if author_name:
-                if is_list:
-                    authors.append(author_name)
-                else:
-                    authors += f"{author_name}, "
-    except (AttributeError, TypeError) as e:
-        print(f"Error in extract_author_names_from_authors: {e}")
-    return authors
+    return bool(author_name) and not author_name.isspace()
 
 
 def _extract_abstract(abstract: bs4.ResultSet) -> str:
@@ -89,11 +102,14 @@ def _extract_abstract(abstract: bs4.ResultSet) -> str:
     return abstract
 
 
-def _extract_doc_info(teiheader: bs4.ResultSet) -> Dict[str, str]:
+def _extract_doc_info(
+    teiheader: bs4.ResultSet, contain_abst: bool = True
+) -> Dict[str, str]:
     """PDFファイルの情報を抽出する関数
 
     Args:
         teiheader (ResultSet): TEIヘッダー情報を含むResultSetオブジェクト
+        contain_abst (bool, optional): 要約を含めるかどうか. Defaults to True.
     Returns:
         doc_info (Dict[str, str]): PDFファイルの情報を格納した辞書
     """
@@ -101,7 +117,10 @@ def _extract_doc_info(teiheader: bs4.ResultSet) -> Dict[str, str]:
         sourceDesc = teiheader.find("sourceDesc").find("biblStruct")
         pdf_title = sourceDesc.find("analytic").find("title").text
         abstract = teiheader.find("profileDesc").find("abstract")
-        abstract = _extract_abstract(abstract)
+        if contain_abst:
+            abstract = _extract_abstract(abstract)
+        else:
+            abstract = ""
         authors = sourceDesc.find("analytic").find_all("author")
         authors = _extract_author_names_from_authors(authors)
         published = sourceDesc.find("monogr").find("imprint").find("date").text
@@ -116,16 +135,20 @@ def _extract_doc_info(teiheader: bs4.ResultSet) -> Dict[str, str]:
         doc_info["Published"] = published
         doc_info["Authors"] = authors
     except (AttributeError, TypeError) as e:
-        raise (f"Error in extract_doc_info: {e}")
+        print(f"Error in extract_doc_info: {e}")
+        return {}
     else:
         return doc_info
 
 
-def run_grobid(dir_path: str) -> None:
+def run_grobid(dir_path: str) -> str | None:
     """Grobidを実行してXMLファイルを生成する関数
 
     Args:
         dir_path (str): PDFファイルが保存されているディレクトリのパス
+
+    Return:
+        dir_path (str | None): XMLファイルが保存されているディレクトリのパス
     """
     try:
         if not os.path.exists(dir_path):
@@ -137,8 +160,13 @@ def run_grobid(dir_path: str) -> None:
         )
     except subprocess.CalledProcessError as e:
         print(f"Error in run_grobid: {e}")
+        return None
     except Exception as e:
         print(f"Error in run_grobid: {e}")
+        return None
+    else:
+        print("Success to run grobid")
+        return dir_path
 
 
 def _parse_xml_file(xml_path: str) -> Dict[str, Any]:
@@ -260,21 +288,33 @@ class DocumentCreator:
     def load_xml(
         self,
         xml_path: str,
-    ) -> None:
+        contain_abst: bool = True,
+    ) -> bool:
+        """XMLファイルを読み込むメソッド
+
+        Args:
+            xml_path (str): XMLファイルのパス
+            contain_abst (bool, optional): 要約を含めるかどうか. Defaults to True.
+        """
+        err_flag = True
         # XMLファイルをパースする
         parsed_data = _parse_xml_file(xml_path)
         if parsed_data is None:
-            raise ValueError("Failed to parse XML file")
+            print("Failed to parse XML file")
+            return err_flag
         soup, self.root = parsed_data["bs4"], parsed_data["root"]
 
         # PDFファイルの情報を取得する
         teiheader = soup.find("teiHeader")
-        self.doc_info = _extract_doc_info(teiheader)
+        self.doc_info = _extract_doc_info(teiheader, contain_abst=contain_abst)
+        if self.doc_info is {}:
+            print("Failed to extract PDF info")
+            return err_flag
 
         # セクションを抽出し、Documentオブジェクトのリストを作成する
         self.div_list = soup.find("text").find_all("div")
 
-        return None
+        return False
 
     def input_pdf_info(self, pdf_info: Dict[str, str]) -> None:
         self.pdf_info.update(pdf_info)
@@ -329,7 +369,7 @@ class DocumentCreator:
             self.documents = documents
         except (ValueError, Exception) as e:
             print(f"Error in DocumentReader.load_data: {e}")
-            return None
+            return []
         else:
             return self.documents
 
@@ -366,4 +406,5 @@ if __name__ == "__main__":
     creator = DocumentCreator()
     creator.load_xml(xml_path)
     documents_2 = creator.create_docs()
+    print(f"documents_2 metadata: \n{documents_2[0].metadata}")
     print(f"documents_2 metadata: \n{documents_2[0].metadata['Section Title']}")

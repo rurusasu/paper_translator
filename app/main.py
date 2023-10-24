@@ -87,7 +87,7 @@ if __name__ == "__main__":
     keyword_list = ["AI", "LLM", "Model", "CNN"]
 
     for keyword in keyword_list:
-        result_list = get_paper_info(keyword)
+        result_list = get_paper_info(keyword, max_result=10)
         write_summary(
             channel_id=SLACK_CHANNENL, keyword=keyword, result_list=result_list
         )

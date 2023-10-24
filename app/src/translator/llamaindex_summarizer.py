@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Literal
 
 import nest_asyncio
 from llama_index import (
@@ -15,14 +15,59 @@ from llama_index.storage.index_store import SimpleIndexStore
 from llama_index.vector_stores import SimpleVectorStore
 
 
-class llamaindex_summarizer:
+def _select_node_parser(node_parser: Literal["simple", "sentence"]) -> Any:
+    """
+    ノードパーサーを選択する関数
+
+    Args:
+        node_parser (Literal["simple", "sentence"]): ノードパーサーの種類
+
+    Returns:
+        Any: 選択されたノードパーサー
+    """
+    if node_parser == "simple":
+        from llama_index.node_parser import SimpleNodeParser
+
+        return SimpleNodeParser()
+    elif node_parser == "sentence":
+        from llama_index.node_parser import SentenceWindowNodeParser
+
+        parser = _set_sentence_window_node_parser(SentenceWindowNodeParser)
+        return parser
+    else:
+        raise ValueError(
+            f"Invalid node_parser: {node_parser}. node_parser must be 'simple' or 'sentence'."
+        )
+
+
+def _set_sentence_window_node_parser(parser: Any) -> Any:
+    """
+    SentenceWindowNodeParserの設定を行う関数
+
+    Args:
+        parser (Any): SentenceWindowNodeParser
+
+    Returns:
+        Any: 設定されたSentenceWindowNodeParser
+    """
+    # ノードパーサーの設定
+    parser.from_defaults(
+        window_size=3,
+        window_metadata_key="sentence_window",
+        original_text_metadata_key="original_text",
+    )
+    return parser
+
+
+class LlamaIndexSummarizer:
     def __init__(
         self,
-        llm_model,
+        llm_model: Any,
         embed_model: Any,
         persist_dir: str | None = None,
-        is_debug=False,
-    ):
+        node_parser: Literal["simple", "sentence"] | None = None,
+        is_debug: bool = False,
+    ) -> None:
         """
         LlamaIndexSummarizerクラスのコンストラクタ
 
@@ -30,24 +75,10 @@ class llamaindex_summarizer:
             llm_model: LLMモデル
             embed_model: Embeddingモデル
             persist_dir: Contextの保存先ディレクトリ
+            node_parser (Literal["simple", "sentence"], optional): ノードパーサーの種類. Defaults to None.
             is_debug (bool, optional): デバッグモードかどうか. Defaults to False.
         """
-        # self.llm_model = llm_model
         self.is_debug = is_debug
-        self._storage_context = None
-        self.node_parser = None
-        self._callback_manager = None
-        # self._embed_model = None
-        self._service_context = self._SimpleServiceContext(
-            llm_model=llm_model, embed_model=embed_model
-        )
-        self._storage_context = self._SimpleStorageContext(
-            persist_dir=persist_dir
-        )
-
-        # 非同期処理の有効化
-        nest_asyncio.apply()
-
         # デバッグの設定
         if is_debug:
             from llama_index.callbacks import CallbackManager, LlamaDebugHandler
@@ -56,11 +87,44 @@ class llamaindex_summarizer:
                 print_trace_on_end=True
             )
             self.callback_manager = CallbackManager([self._llama_debug_handler])
+        else:
+            self.callback_manager = None
+
+        # ノードパーサーの設定
+        if node_parser is not None:
+            self.node_parser = _select_node_parser(node_parser)
+        else:
+            self.node_parser = None
+
+        # Contextの設定
+        self._service_context = self._SimpleServiceContext(
+            llm_model=llm_model,
+            embed_model=embed_model,
+            callback_manager=self.callback_manager,
+            node_parser=self.node_parser,
+        )
+        self._storage_context = self._SimpleStorageContext(
+            persist_dir=persist_dir
+        )
+
+        # 非同期処理の有効化
+        nest_asyncio.apply()
+
+    def __del__(self):
+        """
+        オブジェクトが破棄されるときに呼び出されるメソッド
+        """
+        if hasattr(self, "_storage_context"):
+            del self._storage_context
+        if hasattr(self, "_service_context"):
+            del self._service_context
 
     def _SimpleStorageContext(self, persist_dir: str | None) -> None:
         """
         StorageContextを作成する関数
 
+        Args:
+            persist_dir (str | None): Contextの保存先ディレクトリ
         """
         self._storage_context = StorageContext.from_defaults(
             docstore=SimpleDocumentStore(),
@@ -69,15 +133,31 @@ class llamaindex_summarizer:
             persist_dir=persist_dir,
         )
 
-    def _SimpleServiceContext(self, llm_model, embed_model) -> None:
+    def _SimpleServiceContext(
+        self,
+        llm_model: Any,
+        embed_model: Any,
+        callback_manager: Any,
+        node_parser: Any,
+    ) -> None:
+        """
+        ServiceContextを作成する関数
+
+        Args:
+            llm_model (Any): LLMモデル
+            embed_model (Any): Embeddingモデル
+            callback_manager (Any): CallbackManager
+            node_parser (Any): ノードパーサー
+        """
         self._service_context = ServiceContext.from_defaults(
             llm=llm_model,
             embed_model=embed_model,
-            callback_manager=self._callback_manager,
+            callback_manager=callback_manager,
+            node_parser=node_parser,
             chunk_size=3072,
         )
 
-    def from_documents(self, documents: List[Document]):
+    def from_documents(self, documents: List[Document]) -> DocumentSummaryIndex:
         """
         ドキュメントのリストからDocumentSummaryIndexオブジェクトを作成する関数
 
@@ -96,7 +176,7 @@ class llamaindex_summarizer:
             text_qa_template=self._get_text_qa_prompt_template(),  # QAプロンプト
             summary_template=self._get_tree_summarize_prompt_template(),  # TreeSummarizeプロンプト
             response_mode="tree_summarize",
-            callback_manager=self._callback_manager,
+            callback_manager=self.callback_manager,
             use_async=True,
         )
 
@@ -109,7 +189,7 @@ class llamaindex_summarizer:
 
         return doc_summary_index
 
-    def _get_text_qa_prompt_template(self):
+    def _get_text_qa_prompt_template(self) -> ChatPromptTemplate:
         """
         QAプロンプトテンプレートを作成する関数
 
@@ -152,7 +232,7 @@ class llamaindex_summarizer:
 
         return CHAT_TEXT_QA_PROMPT
 
-    def _get_tree_summarize_prompt_template(self):
+    def _get_tree_summarize_prompt_template(self) -> ChatPromptTemplate:
         """
         ツリー要約プロンプトテンプレートを作成する関数
 
@@ -199,15 +279,15 @@ class llamaindex_summarizer:
     def _get_doc_summary_index(
         self,
         documents: List[Document],
-        response_synthesizer,
+        response_synthesizer: Any,
         summary_query: str,
-    ):
+    ) -> DocumentSummaryIndex:
         """
         DocumentSummaryIndexオブジェクトを作成する関数
 
         Args:
             documents (List[Document]): ドキュメントのリスト
-            response_synthesizer: レスポンスシンセサイザー
+            response_synthesizer (Any): レスポンスシンセサイザー
             summary_query (str): 要約クエリ
 
         Returns:

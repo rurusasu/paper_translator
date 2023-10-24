@@ -256,7 +256,13 @@ def download_pdf(
             raise TypeError("document_root_dir_path must be str")
 
         dir_name = (
-            paper.title.replace(" ", "_").replace(":", "").replace(",", "")
+            paper.title.replace(" ", "_")
+            .replace(":", "")
+            .replace(",", "")
+            .replace("/", "")
+            .replace("\\", "")
+            .replace("(", "")
+            .replace(")", "")
         )
         dir_path = f"{document_root_dir_path}/{dir_name}/"
 
@@ -281,7 +287,8 @@ def download_pdf(
 
     except Exception as e:
         # エラーが発生した場合は、Noneを返す
-        raise (f"Error in download_pdf: {e}")
+        print(f"Error in download_pdf: {e}")
+        return None, None, None
     else:
         print("Completed!")
         return dir_path, pdf_path, pdf_name
