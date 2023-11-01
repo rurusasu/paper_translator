@@ -3,3 +3,4 @@ app/data/
 app/.env
 app/src/__pycache__/
 app/src/translator/__pycache__/
+*.pyc
