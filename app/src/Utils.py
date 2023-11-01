@@ -2,11 +2,9 @@ from typing import Any, List
 
 import torch
 from llama_index import Document
-
-# from langchain.embeddings import HuggingFaceEmbeddings
 from llama_index.embeddings import HuggingFaceEmbedding
 
-from src.translator.llama_cpp import create_llama_cpp_model
+from src.model.llama_cpp import create_llama_cpp_model
 from src.translator.llamaindex_summarizer import LlamaIndexSummarizer
 
 

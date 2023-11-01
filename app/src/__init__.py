@@ -5,6 +5,7 @@ from src.arXivUtils import (
     get_paper_info,
 )
 from src.Informations import DocsInfoDict, arXivInfoDict
+from src.model.llama_cpp import create_llama_cpp_model
 from src.OpenAIUtils import OpenAIModelList, get_message
 from src.SaveToNotion import write_markdown_to_notion
 from src.SlackUtils import (
@@ -12,7 +13,6 @@ from src.SlackUtils import (
     process_mention_event,
     write_message,
 )
-from src.translator.llama_cpp import create_llama_cpp_model
 from src.Utils import write_markdown
 from src.XMLUtils import DocumentCreator, run_grobid
 
