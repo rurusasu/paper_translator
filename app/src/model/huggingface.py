@@ -6,19 +6,18 @@ from huggingface_hub import snapshot_download
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
-def _create_huggingface_model(
-    model_name: str, model_basename: str, device: torch.device
-):
-    GPTQ_Flag = True if "GPTQ" in model_name_or_path.split("/")[-1] else False
+def _create_huggingface_model(model_name: str, device: torch.device):
+    GPTQ_Flag = True if "GPTQ" in model_name.split("/")[-1] else False
     if GPTQ_Flag:
         from auto_gptq import AutoGPTQForCausalLM
 
         model = AutoGPTQForCausalLM.from_quantized(
-            model_name,
+            model_name_or_path=model_name,
             device_map="auto",
             device=device,
             use_safetensors=True,
             trust_remote_code=False,
+            use_auth_token=False,
         )
     else:
         model = AutoModelForCausalLM.from_pretrained(
@@ -44,13 +43,14 @@ def _create_huggingface_tokenizer(model_name_or_path: str):
 
 def create_huggingface_model(
     model_url_or_path: str,
+    device: torch.device = "cpu",
     context_window: int = 4096,
     max_length: int = 2048,
     temperature: float = 0.0,
 ) -> Any:
     from llama_index.llms import HuggingFaceLLM
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     try:
         # モデルのURLまたはパスを取得する
@@ -61,14 +61,12 @@ def create_huggingface_model(
                 "Either model_url or model_path must be specified."
             )
 
-        model_name = _check_model(model_name)
+        # model_name = _check_model(model_name)
         if model_name is None:
             raise ValueError("Model not found.")
 
-        model_basename = "gptq_model-4bit-128g"
-        model = _create_huggingface_model(
-            model_name, model_basename, device=device
-        )
+        # model_basename = "gptq_model-4bit-128g"
+        model = _create_huggingface_model(model_name, device=device)
         tokenizer = _create_huggingface_tokenizer(model_name)
 
         llm = HuggingFaceLLM(
@@ -113,12 +111,29 @@ def _check_model(repo_id: str):
 
 
 if __name__ == "__main__":
+    from llama_index.embeddings import HuggingFaceEmbedding
+
+    from src.translator.llamaindex_summarizer import LlamaIndexSummarizer
+
     # model_name_or_path = "TheBloke/zephyr-7B-alpha-GPTQ"
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
     model_name_or_path = (
         "mmnga/ELYZA-japanese-Llama-2-7b-fast-instruct-GPTQ-calib-ja-2k"
+        # "ELYZA-japanese-Llama-2-7b-fast-instruct-GPTQ-calib-ja-2k"
     )
-    model_basename = "gptq_model-4bit-128g"
-    model = create_huggingface_model(model_name_or_path)
+    llm_model = create_huggingface_model(model_name_or_path, device=device)
     # prompt = "The quick brown fox jumps over the lazy dog"
     # output_text = model.summarize(prompt)
     # print(output_text)
+    max_length = 2048
+    model_name = "sentence-transformers/all-MiniLM-l6-v2"
+    embed_model = HuggingFaceEmbedding(
+        model_name=model_name, max_length=max_length, device=device
+    )
+    summarizer = LlamaIndexSummarizer(
+        llm_model=llm_model,
+        embed_model=embed_model,
+        node_parser="sentence",
+        is_debug=False,
+    )

@@ -6,6 +6,8 @@ def create_llama_cpp_model(
     model_url: str | None = None,
     model_path: str | None = None,
     temperature: float = 0.0,
+    context_window: int = 4096,
+    max_tokens: int = 2048,
 ) -> Any:
     """
     LlamaCPPモデルを生成する関数
@@ -15,6 +17,7 @@ def create_llama_cpp_model(
         model_url (str | None): モデルのURL
         model_path (str | None): モデルのパス
         temperature (float): 生成される文章の多様性を調整する温度パラメータ
+        context_window (int): コンテキストウィンドウのサイズ
 
     Returns:
         LlamaCPP: 生成されたLlamaCPPモデル
@@ -32,10 +35,14 @@ def create_llama_cpp_model(
             model_url=model_url_or_path,
             model_path=model_url_or_path,
             temperature=temperature,
+            context_window=context_window,
+            max_tokens=max_tokens,
         )
     elif package_name == "langchain":
         model = _create_langchain_cpp_model(
-            model_path=model_url_or_path, temperature=temperature
+            model_path=model_url_or_path,
+            temperature=temperature,
+            max_tokens=max_tokens,
         )
     else:
         raise ValueError(
@@ -48,6 +55,7 @@ def _create_llama_index_cpp_model(
     model_url: str | None = None,
     model_path: str | None = None,
     temperature: float = 0.0,
+    context_window: int = 4096,
     max_tokens: int = 2048,
 ) -> Any:
     """
@@ -57,6 +65,8 @@ def _create_llama_index_cpp_model(
         model_url (str | None): モデルのURL
         model_path (str | None): モデルのパス
         temperature (float): 生成される文章の多様性を調整する温度パラメータ
+        context_window (int): コンテキストウィンドウのサイズ
+        max_tokens (int): 生成される文章の最大トークン数
 
     Returns:
         LlamaCPP: 生成されたLlamaCPPモデル
@@ -84,7 +94,7 @@ def _create_llama_index_cpp_model(
             model_path=model_url_or_path,
             temperature=temperature,
             max_new_tokens=max_tokens,
-            context_window=3900,
+            context_window=context_window,
             model_kwargs={
                 "n_gpu_layers=": n_gpu_layers,
                 "n_batch=": n_batch,

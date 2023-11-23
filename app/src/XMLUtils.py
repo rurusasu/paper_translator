@@ -129,7 +129,7 @@ def _extract_doc_info(
 
         doc_info = DocsInfoDict.copy()
         doc_info["Title"] = pdf_title
-        doc_info["All_Document_Summary"] = abstract
+        # doc_info["All_Document_Summary"] = abstract
         doc_info["Idno"] = pdf_idno
         doc_info["Language"] = pdf_lang
         doc_info["Published"] = published
@@ -200,81 +200,114 @@ def _parse_xml_file(xml_path: str) -> Dict[str, Any]:
         return {"bs4": soup, "root": root}
 
 
+def __validate_doc_id_type(doc_id_type: str):
+    """ドキュメントIDの種類を検証する"""
+    valid_types = ["Section_Title", "Serial_Number"]
+    if doc_id_type not in valid_types:
+        raise ValueError("Invalid doc_id")
+
+
+def __get_section_title(element):
+    """セクションタイトルを取得する"""
+    if element.tag == "{http://www.tei-c.org/ns/1.0}head":
+        return element.text
+    return None
+
+
+def __add_pdf_info_to_metadata(meta_data: dict, doc_info: dict):
+    """PDFファイルの情報をメタデータに追加する"""
+    for k, v in doc_info.items():
+        if v != "":
+            meta_data[k] = v
+
+
+def __get_doc_id(doc_id_type: str, element_text: str, i: int):
+    """ドキュメントIDを取得する"""
+    if doc_id_type == "Section_Title":
+        return element_text
+    elif doc_id_type == "Serial_Number":
+        return f"{i}"
+
+
+def __get_section_text(div_list, i):
+    """セクションのテキストを取得する"""
+    text = ""
+    try:
+        text = div_list[i].text
+        soup_title = div_list[i].find("head").text
+        text.removeprefix(soup_title)
+    except AttributeError as e:
+        print(f"Error in get_section_text: {e}")
+        return ""
+    except IndexError as e:
+        print(f"Error in get_section_text: {e}")
+        return None
+    except Exception as e:
+        print(f"Error in get_section_text: {e}")
+        return ""
+    else:
+        return text
+
+
+def __create_document(doc_id, text, meta_data):
+    """Documentオブジェクトを作成する"""
+    return Document(doc_id=doc_id, text=text, metadata=meta_data)
+
+
 def _extract_documents(
     div_list: bs4.ResultSet,
     root: Element,
     doc_info: Dict[str, str],
-    doc_id_type: Literal[
-        "Section_No.", "Section_Title", "Serial_Number"
-    ] = "Serial_Number",
+    doc_id_type: str = "Serial_Number",
 ) -> List[Document]:
-    """XMLからセクションを抽出し、Documentオブジェクトのリストを返す関数
-
-    Args:
-        div_list (ResultSet): セクション情報を含むResultSetオブジェクト
-        root (Element): XMLのルート要素
-        doc_info (Dict[str, str]): PDFファイルの情報を格納した辞書
-        doc_id_type (Literal["Section_No.", "Section_Title", "Serial_Number"], optional): ドキュメントIDの種類. Defaults to "Serial_Number".
-
-    Returns:
-        documents (List[Document]): Documentオブジェクトのリスト
-    """
-    # ドキュメントIDを設定する
-    if doc_id_type not in [
-        "Section_No.",
-        "Section_Title",
-        "Serial_Number",
-    ]:
-        raise ValueError("Invalid doc_id")
+    """XMLからセクションを抽出し、Documentオブジェクトのリストを返す関数"""
+    __validate_doc_id_type(doc_id_type)
 
     documents = []
+    i = 0
+    meta_data = {"Section Title": ""}
+
     try:
-        i = 0
-        meta_data = {
-            "Section No.": "",
-            "Section Title": "",
-        }
-
-        # セクションごとに処理を行う
         for div in root[1][0]:
-            # セクション内の要素ごとに処理を行う
             for element in div:
-                # セクションタイトルを取得する
-                if element.tag == "{http://www.tei-c.org/ns/1.0}head":
-                    if element.attrib.keys():
-                        meta_data["Section No."] = element.attrib["n"]
-                        meta_data["Section Title"] = element.text
-
-                        # PDFファイルの情報をメタデータに追加する
-                        for k, v in doc_info.items():
-                            if v != "":
-                                meta_data[k] = v
-
-                        if doc_id_type == "Section_No.":
-                            doc_id = f"Section No.{element.attrib['n']}"
-                        elif doc_id_type == "Section_Title":
-                            doc_id = element.text
-                        elif doc_id_type == "Serial_Number":
-                            doc_id = f"{i}"
-
-                        # セクションのテキストを取得する
-                        soup_title = div_list[i].find("head").text
-                        text = div_list[i].text
-                        text = text.removeprefix(soup_title)
-
-                        # Documentオブジェクトを作成する
-                        document = Document(
-                            doc_id=doc_id,
-                            text=text,
-                            metadata=meta_data,
-                        )
-                        documents.append(document)
-                        i += 1
-                    else:
-                        pass
-        return documents
-    except (ValueError, Exception) as e:
+                section_title = __get_section_title(element)
+                if section_title:
+                    meta_data["Section Title"] = section_title
+                    __add_pdf_info_to_metadata(meta_data, doc_info)
+                    doc_id = __get_doc_id(doc_id_type, section_title, i)
+                    text = __get_section_text(div_list, i)
+                    # if text is None:
+                    #    break
+                    document = __create_document(doc_id, text, meta_data)
+                    documents.append(document)
+                    i += 1
+                    if _check_section_title(section_title):
+                        break
+            if _check_section_title(section_title):
+                break
+    except Exception as e:
         print(f"Error in extract_documents: {e}")
+    finally:
+        return documents
+
+
+def _check_section_title(section_title: str) -> bool:
+    """セクションタイトルが有効かどうかを判定する関数
+
+    Args:
+        section_title (str): セクションタイトル
+
+    Returns:
+        bool: Trueなら有効、Falseなら無効
+    """
+    if section_title == "Conclusion":
+        return True
+    elif section_title == "Conclusions":
+        return True
+    elif section_title == "References":
+        return True
+    else:
+        return False
 
 
 class DocumentCreator:
@@ -386,9 +419,7 @@ if __name__ == "__main__":
     # from llama_index import SimpleDirectoryReader
 
     base_path = "/home/paper_translator/data"
-    document_name = (
-        "Learning_Transferable_Visual_Models_From_Natural_Language_Supervision"
-    )
+    document_name = "On_Task-personalized_Multimodal_Few-shot_Learning_for_Visually-rich_Document_Entity_Retrieval"
     document_path = f"{base_path}/documents/{document_name}"
     xml_path = f"{document_path}/{document_name}.tei.xml"
 

@@ -27,6 +27,7 @@ lxml = "^4.9.3"
 anytree = "^2.9.0"
 span-marker = "^1.4.0"
 setuptools = "^68.2.2"
+pdfminer-six = "^20221105"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"

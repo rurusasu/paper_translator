@@ -64,7 +64,12 @@ def get_entry_id_from_thread_text(thread_text: str) -> str:
         entry_id (str): エントリーID
     """
     try:
-        entry_id = _split_thread_text(thread_text)[4]
+        # スレッドのテキストを改行文字で分割する
+        entry_id = _split_thread_text(thread_text)
+        if len(entry_id) == 1:
+            entry_id = entry_id[0]
+        elif len(entry_id) >= 4:
+            entry_id = entry_id[4]
         if entry_id[0] == "<":
             entry_id = entry_id[1:]
         if entry_id[-1] == ">":
@@ -85,77 +90,73 @@ def _split_thread_text(thread_text: str) -> List[str]:
     Returns:
         thread_text_list (List[str]): スレッドのテキストを改行文字で分割したリスト
     """
+    thread_text_list = []
     if thread_text is None:
-        return []
+        return thread_text_list
     thread_text_list = thread_text.split("\n")
     return thread_text_list
 
 
-def get_summary_markdown_text(
-    dir_path: str, pdf_name: str, pdf_info: Dict[str, str]
-) -> Dict[str, Any]:
-    """PDFファイルから要約したマークダウンテキストを生成する関数
-        Args:
-        dir_path (str): PDFファイルのディレクトリパス
-        pdf_name (str): PDFファイル名
-        pdf_info (Any): 論文情報
+class PDFProcessor:
+    def __init__(self, dir_path: str, pdf_name: str, pdf_info: Dict[str, str]):
+        self.dir_path = dir_path
+        self.pdf_name = pdf_name
+        self.pdf_info = pdf_info
+        self.device = self._get_device()
+        self.creator = DocumentCreator()
 
-    Returns:
-        markdown_text (Dict[str: Any]): 要約したマークダウンテキストと論文情報を含んだ辞書。"""
+    def _get_device(self):
+        return "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    try:
-        _is_valid_dir_path(dir_path)
-    except ValueError as e:
-        # エラーが発生した場合は、エラーメッセージを表示してNoneを返す
-        print(f"Error: {e}")
+    def _load_xml(self, xml_path: str):
+        err_flag = self.creator.load_xml(xml_path, contain_abst=False)
+        if err_flag:
+            raise Exception("Error loading xml.")
+
+    def _create_docs(self):
+        docs = self.creator.create_docs()
+        if len(docs) == 0:
+            raise Exception("Error creating docs.")
+        return docs
+
+    def get_summary_markdown_text(self) -> Dict[str, Any]:
+        try:
+            self._is_valid_dir_path(self.dir_path)
+            self.dir_path = run_grobid(self.dir_path)
+            if self.dir_path is None:
+                return self._handle_error("Error running Grobid.")
+            xml_path = self.dir_path + self.pdf_name + ".tei.xml"
+            self._load_xml(xml_path)
+            self.creator.input_pdf_info(self.pdf_info)
+            docs = self._create_docs()
+            doc_info = self.creator.get_doc_info()
+            markdown_text = write_markdown(
+                documents=docs,
+                device=self.device,
+                package_name="llama_index",
+                temperature=0.0,
+                context_window=4096,
+                max_tokens=4096,
+            )
+            with open(f"{self.dir_path}/tmp_markdown.md", mode="w") as f:
+                f.write(markdown_text)
+            return {"markdown_text": markdown_text, "doc_info": doc_info}
+        except Exception as e:
+            return self._handle_error(str(e))
+
+    @staticmethod
+    def _is_valid_dir_path(dir_path: str) -> None:
+        if not os.path.exists(dir_path):
+            raise ValueError("Directory path does not exist.")
+        if not os.path.isdir(dir_path):
+            raise ValueError(
+                "File path is specified instead of directory path."
+            )
+
+    @staticmethod
+    def _handle_error(error_message: str):
+        print(f"Error: {error_message}")
         return {}
-
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-
-    dir_path = run_grobid(dir_path)
-    if dir_path is None:
-        # エラーが発生した場合は、エラーメッセージを表示してNoneを返す
-        print("Error running Grobid.")
-        return {}
-    xml_path = dir_path + pdf_name + ".tei.xml"
-    creator = DocumentCreator()
-    err_flag = creator.load_xml(xml_path, contain_abst=False)
-    if err_flag:
-        # エラーが発生した場合は、エラーメッセージを表示してNoneを返す
-        print("Error loading xml.")
-        return {}
-    creator.input_pdf_info(pdf_info)
-    docs = creator.create_docs()
-    if len(docs) == 0:
-        # エラーが発生した場合は、エラーメッセージを表示してNoneを返す
-        print("Error creating docs.")
-        return {}
-    doc_info = creator.get_doc_info()
-    if len(docs) == 0:
-        # 何らかのエラーが発生した場合は、エラーメッセージを表示してNoneを返す
-        print("Error creating docs.")
-        return {}
-    markdown_text = write_markdown(documents=docs, device=device)
-
-    # デバッグ用にテキストを保存する
-    with open(f"{dir_path}/tmp_markdown.md", mode="w") as f:
-        f.write(markdown_text)
-
-    return {"markdown_text": markdown_text, "doc_info": doc_info}
-
-
-def _is_valid_dir_path(dir_path: str) -> None:
-    """ディレクトリパスが有効かどうかをチェックする関数
-    Args:
-        dir_path (str): ディレクトリパス
-
-    Raises:
-        ValueError: ディレクトリパスが存在しない場合、またはファイルパスが指定された場合に発生する例外"""
-
-    if not os.path.exists(dir_path):
-        raise ValueError("Directory path does not exist.")
-    if not os.path.isdir(dir_path):
-        raise ValueError("File path is specified instead of directory path.")
 
 
 def process_ping_request(user: str, thread_ts: str, say) -> None:
@@ -178,7 +179,6 @@ def process_pdf_request(
 ) -> bool:
     """
     PDFファイルの要約を作成する関数
-
     Args:
         thread_message (dict): スレッドのメッセージ
         user (str): ユーザーID
@@ -191,15 +191,14 @@ def process_pdf_request(
         paper = _get_paper(entry_id)
         pdf_info = _create_pdf_info(paper)
         dir_path, pdf_name = _download_pdf(paper, document_dir_path)
-        _is_valid_dir_path(dir_path)
-        summary = _get_summary_markdown_text(dir_path, pdf_name, pdf_info)
-        _write_markdown_to_notion(summary["markdown_text"], summary["doc_info"])
+        pdf_processor = PDFProcessor(dir_path, pdf_name, pdf_info)
+        summary = pdf_processor.get_summary_markdown_text()
+        write_markdown_to_notion(summary["markdown_text"], summary["doc_info"])
         _say_summary_complete(user, thread_ts, say)
         _remove_pdf(dir_path)
         return False
     except Exception as e:
-        _handle_error(e, thread_ts, say)
-        _remove_pdf(dir_path)
+        _handle_error_output_slack(e, thread_ts, say)
         return True
 
 
@@ -254,28 +253,6 @@ def _download_pdf(paper: dict, document_dir_path: str) -> Tuple[str, str]:
     return dir_path, pdf_name
 
 
-def _get_summary_markdown_text(
-    dir_path: str, pdf_name: str, pdf_info: dict
-) -> dict:
-    """
-    要約したマークダウンテキストを生成する関数
-    """
-    summary = get_summary_markdown_text(
-        dir_path=dir_path, pdf_name=pdf_name, pdf_info=pdf_info
-    )
-    if not summary or not summary["markdown_text"] or not summary["doc_info"]:
-        raise ValueError("要約を作成できませんでした。")
-    return summary
-
-
-def _write_markdown_to_notion(markdown_text: str, doc_info: dict) -> None:
-    """
-    Notionにページを作成し、要約を書き込む関数
-    """
-    write_markdown_to_notion(markdown_text=markdown_text, doc_info=doc_info)
-    return None
-
-
 def _say_summary_complete(user: str, thread_ts: str, say) -> None:
     """
     Slackに要約を書き込む関数
@@ -293,7 +270,7 @@ def _remove_pdf(dir_path: str) -> None:
     return None
 
 
-def _handle_error(e: Exception, thread_ts: str, say) -> None:
+def _handle_error_output_slack(e: Exception, thread_ts: str, say) -> None:
     """
     エラーを処理する関数
     """
